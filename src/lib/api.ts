@@ -7,7 +7,7 @@ export const api = axios.create({
     },
 });
 
-interface User {
+export interface User {
     id: string;
     email: string;
     name: string;
@@ -18,6 +18,7 @@ export async function getMe(): Promise<User> {
         const response = await api.get(`/me`, {
             withCredentials: true,
         });
+        console.log(response);
         console.log(response.data.user);
         // console.log(response.data.data);
         return response.data.user;

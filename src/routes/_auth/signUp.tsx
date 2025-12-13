@@ -1,3 +1,4 @@
+import { Separator } from '@/components/ui/separator';
 import { auth } from '@/lib/auth.client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
@@ -13,6 +14,7 @@ export const registerFormSchema = z
         email: z.string().min(1, 'Email obrigatório').email('Email inválido'),
         password: z.string().min(1, 'Senha obrigatória'),
         confim_password: z.string().min(1, 'Confirmação de senha obrigatória'),
+        organization: z.string().min(1, 'Nome da organização obrigatório'),
     })
     .refine((data) => data.password === data.confim_password, {
         path: ['confim_password'],
@@ -49,8 +51,20 @@ function SignUp() {
                     //         : 'Ops! Algo deu errado. Estamos trabalhando para corrigir isso. Tente novamente mais tarde.'
                     // );
                 },
-                onSuccess() {
-                    navigate({ to: '/overview' });
+                async onSuccess(context) {
+                    console.log(context.data);
+                    await auth.organization
+                        .create({
+                            name: credentials.organization,
+                            slug: slugify(credentials.organization),
+                            userId: context.data.user.id,
+                        })
+                        .then(() => {
+                            navigate({ to: '/overview' });
+                        })
+                        .catch((errors) => {
+                            console.log(errors);
+                        });
                 },
             }
         );
@@ -69,7 +83,7 @@ function SignUp() {
                         </p>
                     </div>
 
-                    <div className="mt-10">
+                    <div className="mt-10 w-full">
                         <form
                             onSubmit={handleSubmit(handleRegisterForm)}
                             className="space-y-6"
@@ -149,7 +163,7 @@ function SignUp() {
                                     <div>
                                         <div className="flex items-center justify-between">
                                             <label
-                                                htmlFor="password"
+                                                htmlFor="confim_password"
                                                 className="block text-sm/6 font-medium text-gray-900"
                                             >
                                                 Comfimar senha
@@ -178,6 +192,33 @@ function SignUp() {
                                     Deve ter no mínimo 8 caracteres.
                                 </p>
                             </div>
+                            <Separator orientation="horizontal" />
+
+                            <div>
+                                <div className="flex items-center justify-between">
+                                    <label
+                                        htmlFor="organization"
+                                        className="block text-sm/6 font-medium text-gray-900"
+                                    >
+                                        Nome da organização
+                                    </label>
+                                </div>
+                                <div className="mt-2">
+                                    <input
+                                        {...register('organization')}
+                                        id="organization"
+                                        type="text"
+                                        autoComplete="current-organization"
+                                        className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-gray-500 outline-1 -outline-offset-1 outline-gray-400 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-violet-500 sm:text-sm/6"
+                                    />
+                                    {errors.organization && (
+                                        <p className="text-destructive text-sm">
+                                            {errors.organization.message}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+
                             <div>
                                 <button
                                     type="submit"
@@ -211,4 +252,12 @@ function SignUp() {
             )} */}
         </div>
     );
+}
+
+function slugify(text: string) {
+    return text
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-') // troca espaços por -
+        .replace(/[^\w-]+/g, ''); // remove caracteres especiais
 }
