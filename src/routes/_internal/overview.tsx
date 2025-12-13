@@ -1,4 +1,5 @@
 import { ChartBarMultiple } from '@/components/chart-bar-multiple';
+import { SectionCards } from '@/components/section-cards';
 import { getMe } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
@@ -78,9 +79,13 @@ function RouteComponent() {
 
     return (
         <div className="flex flex-col h-full gap-6 grow">
+            <h1 className="text-3xl font-bold mb-2">Overview</h1>
             <div className="grid gap-5 grid-cols-4">
-                {kpisMock.map((item) => (
+                {/* {kpisMock.map((item) => (
                     <KpiCard data={item} />
+                ))} */}
+                {kpisMock.map((item) => (
+                    <SectionCards data={item} />
                 ))}
             </div>
             <div className="h-full">
