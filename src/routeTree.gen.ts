@@ -12,8 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as InternalRouteImport } from './routes/_internal'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
+import { Route as InternalSettingsRouteImport } from './routes/_internal/settings'
 import { Route as InternalOverviewRouteImport } from './routes/_internal/overview'
 import { Route as InternalMembersRouteImport } from './routes/_internal/members'
+import { Route as InternalFeedbacksRouteImport } from './routes/_internal/feedbacks'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/signUp'
 import { Route as AuthSignInRouteImport } from './routes/_auth/signIn'
 
@@ -31,6 +33,11 @@ const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
   path: '/demo/tanstack-query',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InternalSettingsRoute = InternalSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => InternalRoute,
+} as any)
 const InternalOverviewRoute = InternalOverviewRouteImport.update({
   id: '/overview',
   path: '/overview',
@@ -39,6 +46,11 @@ const InternalOverviewRoute = InternalOverviewRouteImport.update({
 const InternalMembersRoute = InternalMembersRouteImport.update({
   id: '/members',
   path: '/members',
+  getParentRoute: () => InternalRoute,
+} as any)
+const InternalFeedbacksRoute = InternalFeedbacksRouteImport.update({
+  id: '/feedbacks',
+  path: '/feedbacks',
   getParentRoute: () => InternalRoute,
 } as any)
 const AuthSignUpRoute = AuthSignUpRouteImport.update({
@@ -56,16 +68,20 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/signIn': typeof AuthSignInRoute
   '/signUp': typeof AuthSignUpRoute
+  '/feedbacks': typeof InternalFeedbacksRoute
   '/members': typeof InternalMembersRoute
   '/overview': typeof InternalOverviewRoute
+  '/settings': typeof InternalSettingsRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/signIn': typeof AuthSignInRoute
   '/signUp': typeof AuthSignUpRoute
+  '/feedbacks': typeof InternalFeedbacksRoute
   '/members': typeof InternalMembersRoute
   '/overview': typeof InternalOverviewRoute
+  '/settings': typeof InternalSettingsRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
 }
 export interface FileRoutesById {
@@ -74,8 +90,10 @@ export interface FileRoutesById {
   '/_internal': typeof InternalRouteWithChildren
   '/_auth/signIn': typeof AuthSignInRoute
   '/_auth/signUp': typeof AuthSignUpRoute
+  '/_internal/feedbacks': typeof InternalFeedbacksRoute
   '/_internal/members': typeof InternalMembersRoute
   '/_internal/overview': typeof InternalOverviewRoute
+  '/_internal/settings': typeof InternalSettingsRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
 }
 export interface FileRouteTypes {
@@ -84,16 +102,20 @@ export interface FileRouteTypes {
     | '/'
     | '/signIn'
     | '/signUp'
+    | '/feedbacks'
     | '/members'
     | '/overview'
+    | '/settings'
     | '/demo/tanstack-query'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/signIn'
     | '/signUp'
+    | '/feedbacks'
     | '/members'
     | '/overview'
+    | '/settings'
     | '/demo/tanstack-query'
   id:
     | '__root__'
@@ -101,8 +123,10 @@ export interface FileRouteTypes {
     | '/_internal'
     | '/_auth/signIn'
     | '/_auth/signUp'
+    | '/_internal/feedbacks'
     | '/_internal/members'
     | '/_internal/overview'
+    | '/_internal/settings'
     | '/demo/tanstack-query'
   fileRoutesById: FileRoutesById
 }
@@ -137,6 +161,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoTanstackQueryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_internal/settings': {
+      id: '/_internal/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof InternalSettingsRouteImport
+      parentRoute: typeof InternalRoute
+    }
     '/_internal/overview': {
       id: '/_internal/overview'
       path: '/overview'
@@ -149,6 +180,13 @@ declare module '@tanstack/react-router' {
       path: '/members'
       fullPath: '/members'
       preLoaderRoute: typeof InternalMembersRouteImport
+      parentRoute: typeof InternalRoute
+    }
+    '/_internal/feedbacks': {
+      id: '/_internal/feedbacks'
+      path: '/feedbacks'
+      fullPath: '/feedbacks'
+      preLoaderRoute: typeof InternalFeedbacksRouteImport
       parentRoute: typeof InternalRoute
     }
     '/_auth/signUp': {
@@ -169,13 +207,17 @@ declare module '@tanstack/react-router' {
 }
 
 interface InternalRouteChildren {
+  InternalFeedbacksRoute: typeof InternalFeedbacksRoute
   InternalMembersRoute: typeof InternalMembersRoute
   InternalOverviewRoute: typeof InternalOverviewRoute
+  InternalSettingsRoute: typeof InternalSettingsRoute
 }
 
 const InternalRouteChildren: InternalRouteChildren = {
+  InternalFeedbacksRoute: InternalFeedbacksRoute,
   InternalMembersRoute: InternalMembersRoute,
   InternalOverviewRoute: InternalOverviewRoute,
+  InternalSettingsRoute: InternalSettingsRoute,
 }
 
 const InternalRouteWithChildren = InternalRoute._addFileChildren(

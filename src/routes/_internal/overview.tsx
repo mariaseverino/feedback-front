@@ -18,11 +18,11 @@ interface KpiData {
 }
 
 // Estrutura para os dados do gráfico de volume
-interface VolumeFeedbackMensal {
-    mes: string; // Ex: 'Dez/24', 'Jan/25'
+export interface VolumeFeedbackMensal {
+    month: string; // Ex: 'Dez/24', 'Jan/25'
     anonimos: number;
     identificados: number;
-    total: number;
+    // total: number;
 }
 
 function RouteComponent() {
@@ -69,12 +69,12 @@ function RouteComponent() {
 
     // Dados para o gráfico de volume (últimos 6 meses)
     const volumeFeedbackMock: VolumeFeedbackMensal[] = [
-        { mes: 'Jul/25', anonimos: 65, identificados: 85, total: 150 },
-        { mes: 'Ago/25', anonimos: 58, identificados: 92, total: 150 },
-        { mes: 'Set/25', anonimos: 75, identificados: 110, total: 185 },
-        { mes: 'Out/25', anonimos: 80, identificados: 125, total: 205 },
-        { mes: 'Nov/25', anonimos: 95, identificados: 115, total: 210 },
-        { mes: 'Dez/25', anonimos: 105, identificados: 100, total: 205 }, // Mês atual
+        { month: 'Jul/25', anonimos: 65, identificados: 85 },
+        { month: 'Ago/25', anonimos: 58, identificados: 92 },
+        { month: 'Set/25', anonimos: 75, identificados: 110 },
+        { month: 'Out/25', anonimos: 80, identificados: 125 },
+        { month: 'Nov/25', anonimos: 95, identificados: 115 },
+        { month: 'Dez/25', anonimos: 105, identificados: 100 }, // Mês atual
     ];
 
     return (
@@ -89,7 +89,7 @@ function RouteComponent() {
                 ))}
             </div>
             <div className="h-full">
-                <ChartBarMultiple />
+                <ChartBarMultiple chartData={volumeFeedbackMock} />
             </div>
         </div>
     );

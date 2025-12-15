@@ -1,31 +1,17 @@
 import { SelectDemo } from '@/components/selectDemo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Select } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { getMe, type User } from '@/lib/api';
 import { auth } from '@/lib/auth.client';
-import { useQuery } from '@tanstack/react-query';
 import {
     createFileRoute,
     Link,
-    Navigate,
     Outlet,
     redirect,
-    useLoaderData,
     useNavigate,
 } from '@tanstack/react-router';
 
-import {
-    ChevronsUpDown,
-    DoorOpen,
-    LogOut,
-    MessagesSquare,
-    Moon,
-    Sun,
-} from 'lucide-react';
-import { useEffect, useState } from 'react';
-
-// export const queryClient = new QueryClient();
+import { LogOut, MessagesSquare } from 'lucide-react';
 
 export const Route = createFileRoute('/_internal')({
     component: InternalLayout,
@@ -36,11 +22,6 @@ export const Route = createFileRoute('/_internal')({
             if (!user) {
                 throw redirect({ to: '/signIn' });
             }
-
-            // const { data: user } = useQuery({
-            //     queryKey: ['current_user'],
-            //     queryFn: () => getMe(),
-            // });
 
             return { user };
         } catch (error) {
@@ -53,8 +34,7 @@ export function InternalLayout() {
     const { user } = Route.useRouteContext();
 
     return (
-        <div className="bg-linear-to-r from-[#9796f0] to-[#fbc7d4] max-h-screen flex flex-col h-screen py-5 gap-14">
-            {/* <div className="bg-[#F8F8FF] min-h-screen flex flex-col"> */}
+        <div className="bg-linear-to-r from-[#9796f0] to-[#fbc7d4] max-h-screen flex flex-col h-screen py-5 gap-14 dark:bg-linear-to-r dark:from-gray-900 dark:to-gray-900">
             <Header user={user} />
 
             <main className={`flex flex-1 w-7xl mx-auto h-full`}>
@@ -135,16 +115,16 @@ export function Header({ user }: { user: User }) {
                     Equipe
                 </Link>
                 <Link
-                    to="/"
+                    to="/feedbacks"
                     className="[&.active]:bg-gray-200 [&.active]:text-[#6C63FF] [&.active]:font-medium px-3 py-0.5 rounded-md"
                 >
                     Feedbacks
                 </Link>
                 <Link
-                    to="/"
+                    to="/settings"
                     className="[&.active]:bg-gray-200 [&.active]:text-[#6C63FF] [&.active]:font-medium px-3 py-0.5 rounded-md"
                 >
-                    Plano & Pagamentos
+                    Configurações
                 </Link>
             </nav>
         </header>

@@ -21,7 +21,6 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
@@ -39,11 +38,59 @@ export const Route = createFileRoute('/_internal/members')({
 });
 
 function RouteComponent() {
+    const [tab, setTab] = React.useState<'active_members' | 'pending_members'>(
+        'active_members'
+    );
+
     return (
         <div className="w-full flex flex-col gap-8">
             <h1 className="text-3xl font-bold">Membros da organização</h1>
-            <div className="backdrop-blur-lg border border-[#F8F8FF]/20 shadow-2xl bg-linear-to-br from-[#F8F8FF]/20 to-[#F8F8FF]/5 rounded-lg p-6 transition duration-300 hover:shadow-2xl w-full">
-                <DataTableDemo />
+            <div className="grid grid-cols-5 gap-5">
+                <div className="flex flex-col col-span-1 gap-2">
+                    <button
+                        className={`px-3 py-1 rounded-md text-start ${tab === 'active_members' ? 'bg-[#F8F8FF]/70 font-medium' : 'hover:bg-gray-50/20'}`}
+                        onClick={() => setTab('active_members')}
+                    >
+                        Membros ativos
+                    </button>
+                    {/* <button className="px-3 py-1 rounded-md hover:bg-gray-50/20">
+                        Pagamentos
+                    </button> */}
+                    <button
+                        className={`px-3 py-1 rounded-md text-start ${tab === 'pending_members' ? 'bg-[#F8F8FF]/70 font-medium' : 'hover:bg-gray-50/20'}`}
+                        onClick={() => setTab('pending_members')}
+                    >
+                        Convites pendentes
+                    </button>
+                </div>
+
+                {tab === 'active_members' && (
+                    <div className="col-span-4 border-l pl-5">
+                        <h2 className="text-3xl font-semibold text-gray-800">
+                            Membros ativos
+                        </h2>
+                        <p className="text-lg mb-4 text-gray-800">
+                            Gerencie os membros da sua organização
+                        </p>
+                        <div className="backdrop-blur-lg border border-[#F8F8FF]/20 shadow-2xl bg-linear-to-br from-[#F8F8FF]/20 to-[#F8F8FF]/5 rounded-lg p-6 transition duration-300 hover:shadow-2xl w-full">
+                            <DataTableDemo />
+                        </div>
+                    </div>
+                )}
+
+                {tab === 'pending_members' && (
+                    <div className="col-span-4 border-l pl-5">
+                        <h2 className="text-3xl font-semibold text-gray-800">
+                            Convites pendentes
+                        </h2>
+                        <p className="text-lg mb-4 text-gray-800">
+                            Gerencie os convites pendentes
+                        </p>
+                        <div className="backdrop-blur-lg border border-[#F8F8FF]/20 shadow-2xl bg-linear-to-br from-[#F8F8FF]/20 to-[#F8F8FF]/5 rounded-lg p-6 transition duration-300 hover:shadow-2xl w-full">
+                            <DataTableDemo />
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
