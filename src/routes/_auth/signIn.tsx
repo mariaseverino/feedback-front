@@ -35,10 +35,6 @@ function SignIn() {
         resolver: zodResolver(loginFormSchema),
     });
 
-    const [openAlert, setOpenAlert] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [isPending, setIsPending] = useState(false);
-
     const navigate = useNavigate();
 
     async function handleLoginForm(credentials: LoginData) {
@@ -46,10 +42,9 @@ function SignIn() {
             {
                 email: credentials.email,
                 password: credentials.password,
-                callbackURL: 'http://localhost:3333/',
             },
             {
-                onError(context) {
+                onError(context: any) {
                     // setErrorMessage(
                     //     context.response?.status === 400
                     //         ? 'Ops! Parece que o email ou a senha estão errados.'
