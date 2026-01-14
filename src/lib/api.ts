@@ -9,9 +9,12 @@ export const api = axios.create({
 });
 
 export interface User {
-    id: string;
-    email: string;
     name: string;
+    email: string;
+    image: string | null;
+    role: string | null;
+    activeOrganizationId: string | null;
+    organizationName: string | null;
 }
 
 export interface Member {
@@ -25,9 +28,7 @@ export async function getMe(): Promise<User> {
         const response = await api.get(`/me`, {
             withCredentials: true,
         });
-        console.log(response);
-        console.log(response.data.user);
-        // console.log(response.data.data);
+
         return response.data.user;
     } catch (err) {
         const error = err as AxiosError<{ message?: string }>;
@@ -35,35 +36,48 @@ export async function getMe(): Promise<User> {
     }
 }
 
-export async function getMembers(): Promise<Member[] | []> {
-    console.log('teste');
+// export async function getMembers(): Promise<Member[] | []> {
+//     console.log('teste');
+//     try {
+//         const { data: organizations } = await auth.organization.list();
+//         console.log(organizations![0].id);
+
+//         if (organizations) {
+//             console.log(organizations);
+//             const { data, error } = await auth.organization.listMembers({
+//                 query: {
+//                     organizationId: organizations[0].id,
+//                     // limit: 100,
+//                     // offset: 0,
+//                     // sortBy: 'createdAt',
+//                     // sortDirection: 'desc',
+//                     // filterField: 'createdAt',
+//                     // filterOperator: 'eq',
+//                     // filterValue: 'value',
+//                 },
+//             });
+//             console.log(data);
+//             console.log(data?.members);
+//             // console.log(response.data.data);
+//             return data?.members ?? [];
+//         }
+
+//         console.log(organizations);
+
+//         return [];
+//     } catch (err) {
+//         const error = err as AxiosError<{ message?: string }>;
+//         throw error;
+//     }
+// }
+
+export async function deleteAccount() {
     try {
-        const { data: organizations } = await auth.organization.list();
-        console.log(organizations![0].id);
+        const a = await api.delete(`/delete-account`, {
+            withCredentials: true,
+        });
 
-        if (organizations) {
-            console.log(organizations);
-            const { data, error } = await auth.organization.listMembers({
-                query: {
-                    organizationId: organizations[0].id,
-                    // limit: 100,
-                    // offset: 0,
-                    // sortBy: 'createdAt',
-                    // sortDirection: 'desc',
-                    // filterField: 'createdAt',
-                    // filterOperator: 'eq',
-                    // filterValue: 'value',
-                },
-            });
-            console.log(data);
-            console.log(data?.members);
-            // console.log(response.data.data);
-            return data?.members ?? [];
-        }
-
-        console.log(organizations);
-
-        return [];
+        console.log(a);
     } catch (err) {
         const error = err as AxiosError<{ message?: string }>;
         throw error;

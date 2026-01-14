@@ -45,26 +45,30 @@ function SignUp() {
             {
                 onError(context) {
                     console.log(context.error.message);
-                    // setErrorMessage(
-                    //     context.response?.status === 400
-                    //         ? 'Ops! Parece que o email ou a senha estão errados.'
-                    //         : 'Ops! Algo deu errado. Estamos trabalhando para corrigir isso. Tente novamente mais tarde.'
-                    // );
                 },
                 async onSuccess(context) {
-                    console.log(context.data);
-                    await auth.organization
-                        .create({
-                            name: credentials.organization,
-                            slug: slugify(credentials.organization),
-                            userId: context.data.user.id,
-                        })
-                        .then(() => {
-                            navigate({ to: '/overview' });
-                        })
-                        .catch((errors) => {
-                            console.log(errors);
+                    const { data, error } = await auth.organization.create({
+                        name: credentials.organization,
+                        slug: slugify(credentials.organization),
+                        userId: context.data.user.id,
+                        // keepCurrentActiveOrganization: true,
+                    });
+
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        await auth.organization.setActive({
+                            organizationId: data.id,
+                            organizationSlug: data.slug,
                         });
+                        navigate({ to: '/overview' });
+                    }
+                    // .then(() => {
+                    //     // navigate({ to: '/overview' });
+                    // })
+                    // .catch((errors) => {
+                    //     console.log(errors);
+                    // });
                 },
             }
         );

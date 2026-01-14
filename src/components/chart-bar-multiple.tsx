@@ -34,7 +34,7 @@ export function ChartBarMultiple({
     chartData: VolumeFeedbackMensal[];
 }) {
     return (
-        <Card className="h-full pb-1.5 backdrop-blur-lg border border-[#F8F8FF]/20 shadow-2xl bg-linear-to-br from-[#F8F8FF]/20 to-[#F8F8FF]/5 rounded-lg">
+        <Card className="h-full pb-1.5 backdrop-blur-none border-0 shadow bg-card/10 rounded-lg">
             <CardHeader>
                 <CardTitle>Volume Mensal de Feedbacks</CardTitle>
                 <CardDescription className="text-gray-700 dark:text-white">
@@ -62,7 +62,7 @@ export function ChartBarMultiple({
                         <Bar dataKey="anonimos" fill="#6C63FF" radius={4} />
                         <Bar
                             dataKey="identificados"
-                            fill="#ff7295"
+                            fill="#A4F5A6"
                             radius={4}
                         />
                     </BarChart>

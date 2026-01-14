@@ -21,10 +21,10 @@ export function SectionCards({ data }: { data: KpiData }) {
     const isPositiveTrend =
         data.id === 'total-mes' || data.id === 'media-semana';
     const trendColor = isPositiveTrend
-        ? 'text-green-500 bg-green-200'
-        : 'text-red-500 bg-red-200';
+        ? 'bg-[#417640]/30 text-[#1D711C] border-[#1D711C]'
+        : 'text-[#B43840] bg-[#BC5E64]/30 border-[#B43840]';
     return (
-        <Card className="@container/card backdrop-blur-lg border border-[#F8F8FF]/20 shadow-2xl bg-linear-to-br from-[#F8F8FF]/20 to-[#F8F8FF]/5 rounded-lg">
+        <div className="bg-card/10 shadow rounded-lg py-6 ">
             <CardHeader>
                 <CardDescription className="text-gray-700 dark:text-white">
                     {data.titulo}
@@ -49,6 +49,6 @@ export function SectionCards({ data }: { data: KpiData }) {
                     {data.descricao}
                 </p>
             </CardFooter>
-        </Card>
+        </div>
     );
 }

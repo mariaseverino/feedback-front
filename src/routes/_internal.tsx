@@ -1,6 +1,7 @@
 import { SelectDemo } from '@/components/selectDemo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { useListOrganizations, useMe } from '@/hooks/useMe';
 import { getMe, type User } from '@/lib/api';
 import { auth } from '@/lib/auth.client';
 import {
@@ -11,31 +12,31 @@ import {
     useNavigate,
 } from '@tanstack/react-router';
 
-import { LogOut, MessagesSquare } from 'lucide-react';
+import { LogOut, MessagesSquare, Moon, Sun } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export const Route = createFileRoute('/_internal')({
     component: InternalLayout,
-    beforeLoad: async () => {
-        try {
-            const user = await getMe();
+    beforeLoad: async ({ context }) => {
+        const user =
+            context.queryClient.getQueryData(['me']) ??
+            (await context.queryClient.fetchQuery({
+                queryKey: ['me'],
+                queryFn: getMe,
+            }));
 
-            if (!user) {
-                throw redirect({ to: '/signIn' });
-            }
-
-            return { user };
-        } catch (error) {
+        if (!user) {
             throw redirect({ to: '/signIn' });
         }
+
+        return { user };
     },
 });
 
 export function InternalLayout() {
-    const { user } = Route.useRouteContext();
-
     return (
-        <div className="bg-linear-to-r from-[#9796f0] to-[#fbc7d4] max-h-screen flex flex-col h-screen py-5 gap-14 dark:bg-linear-to-r dark:from-gray-900 dark:to-gray-900">
-            <Header user={user} />
+        <div className="bg-background max-h-screen flex flex-col h-screen py-5 gap-14">
+            <Header />
 
             <main className={`flex flex-1 w-7xl mx-auto h-full`}>
                 <Outlet />
@@ -44,11 +45,15 @@ export function InternalLayout() {
     );
 }
 
-export function Header({ user }: { user: User }) {
+export function Header() {
+    const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+
     const navigate = useNavigate();
 
-    const { data: organizations } = auth.useListOrganizations();
+    const { data: user, isLoading } = useMe();
 
+    const { data: organizations = [] } = useListOrganizations();
+    // const { data: organizations } = auth.useListOrganizations();
     async function handleLogOut() {
         await auth.signOut({
             fetchOptions: {
@@ -59,25 +64,78 @@ export function Header({ user }: { user: User }) {
         });
     }
 
+    useEffect(() => {
+        function getThemeFromStorage() {
+            const storedTheme = localStorage.getItem('theme') as
+                | 'light'
+                | 'dark';
+            if (storedTheme) {
+                handleChangeTheme(storedTheme);
+            } else {
+                handleChangeTheme(theme);
+            }
+        }
+
+        getThemeFromStorage();
+    }, []);
+
+    const handleChangeTheme = (newTheme: 'light' | 'dark') => {
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+        if (newTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else if (newTheme === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            const prefersDark = window.matchMedia(
+                '(prefers-color-scheme: dark)'
+            ).matches;
+            if (prefersDark) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+    };
+
     return (
         <header className="text-(--title) pb-1 px-10 flex flex-col gap-8 relative">
             <div className="flex justify-between">
                 <div className="flex gap-10">
-                    <MessagesSquare className="size-8 text-[#6C63FF]" />
+                    <MessagesSquare className="size-8 text-primary" />
                     {organizations && (
-                        <SelectDemo organizations={organizations} />
+                        <SelectDemo
+                            itens={organizations}
+                            label="Organizacoes"
+                            className="min-w-56"
+                            value={user?.activeOrganizationId!}
+                        />
                     )}
+                </div>
+                <div className="bg-card/10 flex rounded-full">
+                    <button
+                        className={`${theme == 'light' ? 'bg-foreground/10' : ''} px-3 rounded-full`}
+                        onClick={() => handleChangeTheme('light')}
+                    >
+                        <Sun className="m-auto " />
+                    </button>
+                    <button
+                        className={`${theme == 'dark' ? 'bg-foreground/10' : ''} px-3 rounded-full`}
+                        onClick={() => handleChangeTheme('dark')}
+                    >
+                        <Moon className="m-auto" />
+                    </button>
                 </div>
                 <div className="flex gap-2">
                     {/* {getIcon('superHeroi1')} */}
                     <div
                         // size="lg"
-                        className="flex bg-gray-50/20 px-3 py-2 rounded-xl gap-2 items-center"
+                        className="flex bg-card/10 px-3 py-2 rounded-xl gap-2 items-center"
                     >
                         <Avatar className="h-8 w-8 rounded-lg">
                             <AvatarImage
                                 src="https://github.com/shadcn.png"
-                                alt={user.name}
+                                alt={user?.name}
                             />
                             <AvatarFallback className="rounded-lg">
                                 CN
@@ -85,10 +143,10 @@ export function Header({ user }: { user: User }) {
                         </Avatar>
                         <div className="grid flex-1 text-left text-sm leading-tight">
                             <span className="truncate font-medium">
-                                {user.name}
+                                {user?.name}
                             </span>
                             <span className="truncate text-xs">
-                                {user.email}
+                                {user?.email}
                             </span>
                         </div>
                         <Separator
@@ -104,25 +162,25 @@ export function Header({ user }: { user: User }) {
             <nav className="z-50 flex gap-2">
                 <Link
                     to="/overview"
-                    className="[&.active]:bg-[#F8F8FF]/70 [&.active]:text-[#6C63FF] [&.active]:font-medium px-3 py-0.5 rounded-md"
+                    className="hover:bg-card/10 [&.active]:text-primary [&.active]:font-medium px-3 py-0.5 hover:rounded-t-md [&.active]:border-b-2 [&.active]:border-primary"
                 >
                     Overview
                 </Link>
                 <Link
                     to="/members"
-                    className="[&.active]:bg-gray-200 [&.active]:text-[#6C63FF] [&.active]:font-medium px-3 py-0.5 rounded-md"
+                    className="hover:bg-card/10 [&.active]:text-primary [&.active]:font-medium px-3 py-0.5 hover:rounded-t-md [&.active]:border-b-2 [&.active]:border-primary"
                 >
                     Equipe
                 </Link>
                 <Link
                     to="/feedbacks"
-                    className="[&.active]:bg-gray-200 [&.active]:text-[#6C63FF] [&.active]:font-medium px-3 py-0.5 rounded-md"
+                    className="hover:bg-card/10 [&.active]:text-primary [&.active]:font-medium px-3 py-0.5 hover:rounded-t-md [&.active]:border-b-2 [&.active]:border-primary"
                 >
                     Feedbacks
                 </Link>
                 <Link
                     to="/settings"
-                    className="[&.active]:bg-gray-200 [&.active]:text-[#6C63FF] [&.active]:font-medium px-3 py-0.5 rounded-md"
+                    className="hover:bg-card/10 [&.active]:text-primary [&.active]:font-medium px-3 py-0.5 hover:rounded-t-md [&.active]:border-b-2 [&.active]:border-primary"
                 >
                     Configurações
                 </Link>

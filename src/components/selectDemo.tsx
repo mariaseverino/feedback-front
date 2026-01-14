@@ -8,24 +8,39 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 
-interface Organization {
+interface Item {
     id: string;
     name: string;
 }
+
+interface SelectDemoProps {
+    itens: Item[];
+    value?: string;
+    onChange?: (value: string) => void;
+    label?: string;
+    className?: string;
+}
+
 export function SelectDemo({
-    organizations,
-}: {
-    organizations: Organization[];
-}) {
+    itens,
+    value,
+    onChange,
+    label,
+    className,
+}: SelectDemoProps) {
     return (
-        <Select defaultValue={organizations[0]?.id}>
-            <SelectTrigger className="w-56 bg-gray-50/20">
-                <SelectValue />
+        <Select
+            // defaultValue={itens[0]?.id}
+            value={value}
+            onValueChange={onChange}
+        >
+            <SelectTrigger className={`w-full bg-gray-50/20 ${className}`}>
+                <SelectValue placeholder={label} />
             </SelectTrigger>
             <SelectContent>
                 <SelectGroup>
-                    <SelectLabel>Organizacoes</SelectLabel>
-                    {organizations.map(({ id, name }) => (
+                    <SelectLabel>{label}</SelectLabel>
+                    {itens.map(({ id, name }) => (
                         <SelectItem
                             value={id}
                             key={id}

@@ -1,54 +1,143 @@
 import { createFileRoute } from '@tanstack/react-router';
-import {
-    flexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    useReactTable,
-    type ColumnDef,
-    type ColumnFiltersState,
-    type SortingState,
-    type VisibilityState,
-} from '@tanstack/react-table';
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
 
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+
 import { Input } from '@/components/ui/input';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
+
+import z from 'zod';
+import { MembersTable } from '@/components/members-table';
+import { SelectDemo } from '@/components/selectDemo';
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { auth } from '@/lib/auth.client';
+import { InviteTable } from '@/components/invites-table';
+
+export const inviteFormSchema = z.object({
+    email: z.string().min(1, 'Email obrigatório').email('Email inválido'),
+    role: z.enum(['member', 'admin']),
+});
+
+export type InviteData = z.infer<typeof inviteFormSchema>;
 
 export const Route = createFileRoute('/_internal/members')({
     component: RouteComponent,
 });
 
+type InviteVariables = {
+    email: string;
+    role: 'member' | 'admin' | 'owner';
+};
+
 function RouteComponent() {
-    const [tab, setTab] = React.useState<'active_members' | 'pending_members'>(
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        control,
+        setValue,
+    } = useForm<InviteData>({
+        resolver: zodResolver(inviteFormSchema),
+    });
+
+    const { data: organizations } = auth.useListOrganizations();
+
+    const queryClient = useQueryClient();
+
+    const { mutateAsync: sendInviteFn } = useMutation({
+        mutationFn: (data: InviteVariables) =>
+            auth.organization.inviteMember({
+                email: data.email, // required
+                role: data.role, // required
+                organizationId: organizations![0].id,
+                resend: true,
+            }),
+        onSuccess(_, variables) {
+            console.log('sucesso');
+            queryClient.setQueryData(['invites'], (data: any) => {
+                console.log({ data: data });
+                return [
+                    ...data,
+                    {
+                        id: crypto.randomUUID(),
+                        email: variables.email,
+                        role: 'member',
+                        createdAt: new Date().toISOString(),
+                    },
+                ];
+            });
+        },
+        onError(error) {
+            alert('deu errro');
+            console.log(error);
+        },
+    });
+
+    const [tab, setTab] = useState<'active_members' | 'pending_members'>(
         'active_members'
     );
 
+    async function handleInviteForm(credentials: InviteData) {
+        await sendInviteFn({
+            email: credentials.email,
+            role: credentials.role,
+        });
+        setValue('email', '');
+        setTab('pending_members');
+    }
+
     return (
         <div className="w-full flex flex-col gap-8">
-            <h1 className="text-3xl font-bold">Membros da organização</h1>
+            <div className="flex justify-between">
+                <h1 className="text-3xl font-bold">Membros da organização</h1>
+                <form
+                    onSubmit={handleSubmit(handleInviteForm)}
+                    className="flex gap-2"
+                >
+                    <Input
+                        placeholder="Email do membro"
+                        {...register('email')}
+                        // type=''
+                        // value={
+                        //     (table
+                        //         .getColumn('email')
+                        //         ?.getFilterValue() as string) ?? ''
+                        // }
+                        // onChange={(event) =>
+                        //     table
+                        //         .getColumn('email')
+                        //         ?.setFilterValue(event.target.value)
+                        // }
+                        className="w-72 placeholder:text-foreground"
+                    />
+
+                    <div>
+                        <Controller
+                            control={control}
+                            name="role"
+                            defaultValue="member"
+                            render={({ field }) => (
+                                <SelectDemo
+                                    itens={[
+                                        { id: 'member', name: 'Membro' },
+                                        { id: 'admin', name: 'Admin' },
+                                    ]}
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    className="min-w-40"
+                                />
+                            )}
+                        />
+                    </div>
+                    <Button type="submit">Enviar convite</Button>
+                </form>
+            </div>
+
             <div className="grid grid-cols-5 gap-5">
                 <div className="flex flex-col col-span-1 gap-2">
                     <button
-                        className={`px-3 py-1 rounded-md text-start ${tab === 'active_members' ? 'bg-[#F8F8FF]/70 font-medium' : 'hover:bg-gray-50/20'}`}
+                        className={`px-3 py-1 rounded-md text-start ${tab === 'active_members' ? 'bg-card/20 font-medium' : 'hover:bg-card/10'}`}
                         onClick={() => setTab('active_members')}
                     >
                         Membros ativos
@@ -57,7 +146,7 @@ function RouteComponent() {
                         Pagamentos
                     </button> */}
                     <button
-                        className={`px-3 py-1 rounded-md text-start ${tab === 'pending_members' ? 'bg-[#F8F8FF]/70 font-medium' : 'hover:bg-gray-50/20'}`}
+                        className={`px-3 py-1 rounded-md text-start ${tab === 'pending_members' ? 'bg-card/20 font-medium' : 'hover:bg-card/10'}`}
                         onClick={() => setTab('pending_members')}
                     >
                         Convites pendentes
@@ -66,348 +155,31 @@ function RouteComponent() {
 
                 {tab === 'active_members' && (
                     <div className="col-span-4 border-l pl-5">
-                        <h2 className="text-3xl font-semibold text-gray-800">
+                        <h2 className="text-3xl font-semibold">
                             Membros ativos
                         </h2>
-                        <p className="text-lg mb-4 text-gray-800">
+                        <p className="text-lg mb-4 text-muted-foreground">
                             Gerencie os membros da sua organização
                         </p>
-                        <div className="backdrop-blur-lg border border-[#F8F8FF]/20 shadow-2xl bg-linear-to-br from-[#F8F8FF]/20 to-[#F8F8FF]/5 rounded-lg p-6 transition duration-300 hover:shadow-2xl w-full">
-                            <DataTableDemo />
+                        <div className="shadow bg-card/10 rounded-lg p-6  w-full">
+                            <MembersTable />
                         </div>
                     </div>
                 )}
 
                 {tab === 'pending_members' && (
                     <div className="col-span-4 border-l pl-5">
-                        <h2 className="text-3xl font-semibold text-gray-800">
+                        <h2 className="text-3xl font-semibold">
                             Convites pendentes
                         </h2>
-                        <p className="text-lg mb-4 text-gray-800">
+                        <p className="text-lg mb-4 text-muted-foreground">
                             Gerencie os convites pendentes
                         </p>
-                        <div className="backdrop-blur-lg border border-[#F8F8FF]/20 shadow-2xl bg-linear-to-br from-[#F8F8FF]/20 to-[#F8F8FF]/5 rounded-lg p-6 transition duration-300 hover:shadow-2xl w-full">
-                            <DataTableDemo />
+                        <div className="shadow bg-card/10 rounded-lg p-6  w-full">
+                            <InviteTable />
                         </div>
                     </div>
                 )}
-            </div>
-        </div>
-    );
-}
-
-import * as React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { auth } from '@/lib/auth.client';
-import type { Member } from '@/lib/api';
-
-// const data: Payment[] = [
-//     {
-//         id: 'm5gr84i9',
-//         amount: 316,
-//         status: 'success',
-//         email: 'ken99@example.com',
-//     },
-//     {
-//         id: '3u1reuv4',
-//         amount: 242,
-//         status: 'success',
-//         email: 'Abe45@example.com',
-//     },
-//     {
-//         id: 'derv1ws0',
-//         amount: 837,
-//         status: 'processing',
-//         email: 'Monserrat44@example.com',
-//     },
-//     {
-//         id: '5kma53ae',
-//         amount: 874,
-//         status: 'success',
-//         email: 'Silas22@example.com',
-//     },
-//     {
-//         id: 'bhqecj4p',
-//         amount: 721,
-//         status: 'failed',
-//         email: 'carmella@example.com',
-//     },
-// ];
-
-export type Payment = {
-    id: string;
-    amount: number;
-    status: 'pending' | 'processing' | 'success' | 'failed';
-    email: string;
-};
-
-export const columns: ColumnDef<Member>[] = [
-    {
-        id: 'select',
-        header: ({ table }) => (
-            <Checkbox
-                checked={
-                    table.getIsAllPageRowsSelected() ||
-                    (table.getIsSomePageRowsSelected() && 'indeterminate')
-                }
-                onCheckedChange={(value) =>
-                    table.toggleAllPageRowsSelected(!!value)
-                }
-                aria-label="Select all"
-            />
-        ),
-        cell: ({ row }) => (
-            <Checkbox
-                checked={row.getIsSelected()}
-                onCheckedChange={(value) => row.toggleSelected(!!value)}
-                aria-label="Select row"
-            />
-        ),
-        enableSorting: false,
-        enableHiding: false,
-    },
-    {
-        accessorKey: 'name',
-        header: 'Nome',
-        cell: ({ row }) => (
-            <div className="capitalize">{row.original.user.name}</div>
-        ),
-    },
-    {
-        accessorKey: 'email',
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() =>
-                        column.toggleSorting(column.getIsSorted() === 'asc')
-                    }
-                >
-                    Email
-                    <ArrowUpDown />
-                </Button>
-            );
-        },
-        cell: ({ row }) => (
-            <div className="lowercase">{row.original.user.email}</div>
-        ),
-    },
-    {
-        accessorKey: 'role',
-        header: 'Função',
-        cell: ({ row }) => (
-            <div className="capitalize">{row.getValue('role')}</div>
-        ),
-    },
-    {
-        accessorKey: 'createdAt',
-        header: 'Membro desde',
-        cell: ({ row }) => {
-            const date = row.getValue<Date>('createdAt');
-
-            return <div>{new Date(date).toLocaleDateString('pt-BR')}</div>;
-        },
-    },
-    {
-        id: 'actions',
-        enableHiding: false,
-        cell: ({ row }) => {
-            const payment = row.original;
-
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() =>
-                                navigator.clipboard.writeText(payment.userId)
-                            }
-                        >
-                            Remover membro
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            );
-        },
-    },
-];
-
-export function DataTableDemo() {
-    const [sorting, setSorting] = React.useState<SortingState>([]);
-    const [columnFilters, setColumnFilters] =
-        React.useState<ColumnFiltersState>([]);
-    const [columnVisibility, setColumnVisibility] =
-        React.useState<VisibilityState>({});
-    const [rowSelection, setRowSelection] = React.useState({});
-
-    const { data: organizations } = auth.useListOrganizations();
-
-    const { data = [] } = useQuery({
-        queryKey: ['members'],
-        queryFn: () =>
-            auth.organization
-                .listMembers({
-                    query: {
-                        organizationId: organizations![0].id,
-                        limit: 100,
-                        offset: 0,
-                        sortBy: 'createdAt',
-                        sortDirection: 'desc',
-                    },
-                })
-                .then((res) => res.data?.members),
-    });
-
-    const table = useReactTable({
-        data,
-        columns,
-        onSortingChange: setSorting,
-        onColumnFiltersChange: setColumnFilters,
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        onColumnVisibilityChange: setColumnVisibility,
-        onRowSelectionChange: setRowSelection,
-        state: {
-            sorting,
-            columnFilters,
-            columnVisibility,
-            rowSelection,
-        },
-    });
-
-    return (
-        <div className="w-full">
-            <div className="flex items-center py-4">
-                <Input
-                    placeholder="Filtrar emails..."
-                    value={
-                        (table
-                            .getColumn('email')
-                            ?.getFilterValue() as string) ?? ''
-                    }
-                    onChange={(event) =>
-                        table
-                            .getColumn('email')
-                            ?.setFilterValue(event.target.value)
-                    }
-                    className="max-w-sm placeholder:text-gray-800"
-                />
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button
-                            variant="outline"
-                            className="ml-auto bg-gray-200/40"
-                        >
-                            Colunas <ChevronDown />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        {table
-                            .getAllColumns()
-                            .filter((column) => column.getCanHide())
-                            .map((column) => {
-                                return (
-                                    <DropdownMenuCheckboxItem
-                                        key={column.id}
-                                        className="capitalize"
-                                        checked={column.getIsVisible()}
-                                        onCheckedChange={(value) =>
-                                            column.toggleVisibility(!!value)
-                                        }
-                                    >
-                                        {column.id}
-                                    </DropdownMenuCheckboxItem>
-                                );
-                            })}
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-            <div className="overflow-hidden rounded-md border">
-                <Table>
-                    <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                      header.column.columnDef
-                                                          .header,
-                                                      header.getContext()
-                                                  )}
-                                        </TableHead>
-                                    );
-                                })}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={
-                                        row.getIsSelected() && 'selected'
-                                    }
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell
-                                    colSpan={columns.length}
-                                    className="h-24 text-center"
-                                >
-                                    Sem resultados
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
-                {/* <div className="text-muted-foreground flex-1 text-sm">
-                    {table.getFilteredSelectedRowModel().rows.length} of{' '}
-                    {table.getFilteredRowModel().rows.length} row(s) selected.
-                </div> */}
-                <div className="space-x-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                        className="bg-gray-200/40"
-                    >
-                        Anterior
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                        className="bg-gray-200/40"
-                    >
-                        Proximo
-                    </Button>
-                </div>
             </div>
         </div>
     );

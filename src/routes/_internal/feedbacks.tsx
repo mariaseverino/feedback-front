@@ -1,3 +1,4 @@
+import { FeedbackModal } from '@/components/feedback-modal';
 import { Button } from '@/components/ui/button';
 import { createFileRoute } from '@tanstack/react-router';
 import {
@@ -169,8 +170,13 @@ function RouteComponent() {
 
     return (
         <div className="w-full flex flex-col gap-8">
-            <h1 className="text-3xl font-bold">Feedback recebidos</h1>
-            <div className="grid grid-cols-2 gap-7 rounded-xl backdrop-blur-lg bg-white/10 border border-white/20 shadow-2xl bg-linear-to-br from-white/20 to-white/5 mx-auto w-full p-6">
+            <div className="flex justify-between">
+                <h1 className="text-3xl font-bold">Feedback recebidos</h1>
+
+                <FeedbackModal />
+            </div>
+
+            <div className="grid grid-cols-2 gap-7 rounded-xl mx-auto w-full p-6">
                 {limitedData.map((feedback) => (
                     <FeedbackCard feedback={feedback} />
                 ))}
@@ -258,13 +264,11 @@ function FeedbackCard({ feedback }: { feedback: Feedback }) {
     const getCategoryColor = (category: FeedbackType) => {
         switch (category) {
             case 'ELOGIO':
-                return 'bg-green-100 text-green-800 border-green-200';
+                return 'bg-[#E2F9E7] text-[#1D711C] border-[#1D711C]';
             case 'SUGESTAO':
-                return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+                return 'bg-[#FCF5DB] text-[#995E32] border-[#995E32]';
             case 'CRITICA':
-                return 'bg-blue-100 text-blue-800 border-blue-200';
-            default:
-                return 'bg-gray-100 text-gray-800 border-gray-200';
+                return 'bg-[#E5F3FE] text-[#2A65C1] border-[#2A65C1]';
         }
     };
 
@@ -282,7 +286,7 @@ function FeedbackCard({ feedback }: { feedback: Feedback }) {
     };
 
     return (
-        <div className="bg-white/30 backdrop-blur-lg border border-white/20 rounded-lg p-4">
+        <div className="bg-card/10 shadow rounded-lg p-4">
             <div className="flex justify-between mb-4">
                 <div className="flex gap-2 text-[#6C63FF]">
                     {feedback.anonymous ? (
@@ -293,7 +297,11 @@ function FeedbackCard({ feedback }: { feedback: Feedback }) {
 
                     <label className="font-bold">
                         De:{' '}
-                        {feedback.anonymous ? 'Anonimo' : `${feedback.sender}`}
+                        <span className="text-foreground">
+                            {feedback.anonymous
+                                ? 'Anonimo'
+                                : `${feedback.sender}`}
+                        </span>
                     </label>
                     <div
                         className={`px-2 py-1 rounded-full text-xs font-medium border ${getCategoryColor(
@@ -314,7 +322,7 @@ function FeedbackCard({ feedback }: { feedback: Feedback }) {
                 <div>
                     <MessageSquare className="size-5 mt-1 text-[#6C63FF]" />
                 </div>
-                {feedback.content}
+                <div className="text-muted-foreground">{feedback.content}</div>
             </div>
         </div>
     );
