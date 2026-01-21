@@ -60,60 +60,60 @@ export function EditProfileModal({
 
     async function handleEditProfileForm(data: EditProfileData) {
         console.log('hhhhhhh');
-        try {
-            const updates = [];
-            console.log('teste');
+        // try {
+        //     const updates = [];
+        //     console.log('teste');
 
-            // 1. Atualizar Nome (updateUser)
-            if (dirtyFields.name) {
-                updates.push(
-                    auth.updateUser({
-                        name: data.name,
-                    })
-                );
-            }
+        //     // 1. Atualizar Nome (updateUser)
+        //     if (dirtyFields.name) {
+        //         updates.push(
+        //             auth.updateUser({
+        //                 name: data.name,
+        //             })
+        //         );
+        //     }
 
-            // 2. Atualizar Email (changeEmail)
-            if (dirtyFields.email) {
-                updates.push(
-                    auth.changeEmail({
-                        newEmail: data.email,
-                        // callbackURL: '/dashboard/settings', // opcional
-                    })
-                );
-            }
+        //     // 2. Atualizar Email (changeEmail)
+        //     if (dirtyFields.email) {
+        //         updates.push(
+        //             auth.changeEmail({
+        //                 newEmail: data.email,
+        //                 // callbackURL: '/dashboard/settings', // opcional
+        //             })
+        //         );
+        //     }
 
-            // 3. Atualizar Organização
-            if (dirtyFields.organization) {
-                updates.push(
-                    auth.organization.update({
-                        data: { name: data.organization },
-                    })
-                );
-            }
+        //     // 3. Atualizar Organização
+        //     if (dirtyFields.organization) {
+        //         updates.push(
+        //             auth.organization.update({
+        //                 data: { name: data.organization },
+        //             })
+        //         );
+        //     }
 
-            // Executa todas as mudanças necessárias em paralelo
-            await Promise.all(updates);
+        //     // Executa todas as mudanças necessárias em paralelo
+        //     await Promise.all(updates);
 
-            queryClient.setQueryData(['me'], (oldData: User | undefined) => {
-                if (!oldData) return undefined;
+        //     queryClient.setQueryData(['me'], (oldData: User | undefined) => {
+        //         if (!oldData) return undefined;
 
-                return {
-                    ...oldData, // Mantém o ID e outros campos que não mudaram
-                    name: data.name, // Valor vindo do formulário
-                    email: data.email, // Valor vindo do formulário
-                    organizationName: data.organization,
-                };
-            });
+        //         return {
+        //             ...oldData, // Mantém o ID e outros campos que não mudaram
+        //             name: data.name, // Valor vindo do formulário
+        //             email: data.email, // Valor vindo do formulário
+        //             organizationName: data.organization,
+        //         };
+        //     });
 
-            // Toast de sucesso aqui
-            console.log('Perfil atualizado com sucesso!');
+        //     // Toast de sucesso aqui
+        //     console.log('Perfil atualizado com sucesso!');
 
-            setOpen(false);
-        } catch (error) {
-            // Tratar erro
-            console.error('Erro ao atualizar:', error);
-        }
+        //     setOpen(false);
+        // } catch (error) {
+        //     // Tratar erro
+        //     console.error('Erro ao atualizar:', error);
+        // }
     }
 
     function handleTest() {

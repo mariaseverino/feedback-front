@@ -12,9 +12,25 @@ export interface User {
     name: string;
     email: string;
     image: string | null;
-    role: string | null;
+    role: 'Member' | 'Owner' | 'Admin';
     activeOrganizationId: string | null;
     organizationName: string | null;
+}
+
+export interface Feedback {
+    id: string;
+    feedback: string;
+    category: string;
+    receiver: string;
+    isAnonymous: boolean | null;
+    createdAt: Date;
+}
+
+export interface SendFeedbackDto {
+    category: string;
+    feedback: string;
+    receiverId: string;
+    anonymous: boolean;
 }
 
 export interface Member {
@@ -71,13 +87,23 @@ export async function getMe(): Promise<User> {
 //     }
 // }
 
-export async function deleteAccount() {
+export async function sendFeedback(data: SendFeedbackDto) {
     try {
-        const a = await api.delete(`/delete-account`, {
+        await api.post<SendFeedbackDto>('/feedback', data, {
             withCredentials: true,
         });
+    } catch (err) {
+        const error = err as AxiosError<{ message?: string }>;
+        throw error;
+    }
+}
 
-        console.log(a);
+export async function getReceivedsFeedbacks() {
+    try {
+        const response = await api.get<Feedback[]>('/feedbacks/received', {
+            withCredentials: true,
+        });
+        return response.data;
     } catch (err) {
         const error = err as AxiosError<{ message?: string }>;
         throw error;

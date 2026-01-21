@@ -1,12 +1,11 @@
-import { Separator } from '@/components/ui/separator';
 import { auth } from '@/lib/auth.client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 
-export const Route = createFileRoute('/_auth/signUp')({
-    component: SignUp,
+export const Route = createFileRoute('/_auth/signUp/$invitationId')({
+    component: SignUpWithInvitation,
 });
 export const registerFormSchema = z
     .object({
@@ -14,7 +13,6 @@ export const registerFormSchema = z
         email: z.string().min(1, 'Email obrigatório').email('Email inválido'),
         password: z.string().min(1, 'Senha obrigatória'),
         confim_password: z.string().min(1, 'Confirmação de senha obrigatória'),
-        organization: z.string().min(1, 'Nome da organização obrigatório'),
     })
     .refine((data) => data.password === data.confim_password, {
         path: ['confim_password'],
@@ -23,7 +21,9 @@ export const registerFormSchema = z
 
 export type RegisterData = z.infer<typeof registerFormSchema>;
 
-function SignUp() {
+function SignUpWithInvitation() {
+    const { invitationId } = Route.useParams();
+
     const {
         register,
         handleSubmit,
@@ -46,31 +46,22 @@ function SignUp() {
                 onError(context) {
                     console.log(context.error.message);
                 },
-                async onSuccess(context) {
-                    const { data, error } = await auth.organization.create({
-                        name: credentials.organization,
-                        slug: slugify(credentials.organization),
-                        userId: context.data.user.id,
-                        // keepCurrentActiveOrganization: true,
-                    });
+                async onSuccess() {
+                    const { data, error } =
+                        await auth.organization.acceptInvitation({
+                            invitationId: invitationId,
+                        });
 
                     if (error) {
                         console.log(error);
                     } else {
                         await auth.organization.setActive({
-                            organizationId: data.id,
-                            organizationSlug: data.slug,
+                            organizationId: data.invitation.organizationId,
                         });
-                        navigate({ to: '/overview' });
+                        navigate({ to: '/feedbacks' });
                     }
-                    // .then(() => {
-                    //     // navigate({ to: '/overview' });
-                    // })
-                    // .catch((errors) => {
-                    //     console.log(errors);
-                    // });
                 },
-            }
+            },
         );
     }
 
@@ -195,32 +186,6 @@ function SignUp() {
                                 <p className="text-gray-500 text-sm mt-2">
                                     Deve ter no mínimo 8 caracteres.
                                 </p>
-                            </div>
-                            <Separator orientation="horizontal" />
-
-                            <div>
-                                <div className="flex items-center justify-between">
-                                    <label
-                                        htmlFor="organization"
-                                        className="block text-sm/6 font-medium text-gray-900"
-                                    >
-                                        Nome da organização
-                                    </label>
-                                </div>
-                                <div className="mt-2">
-                                    <input
-                                        {...register('organization')}
-                                        id="organization"
-                                        type="text"
-                                        autoComplete="current-organization"
-                                        className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-gray-500 outline-1 -outline-offset-1 outline-gray-400 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-violet-500 sm:text-sm/6"
-                                    />
-                                    {errors.organization && (
-                                        <p className="text-destructive text-sm">
-                                            {errors.organization.message}
-                                        </p>
-                                    )}
-                                </div>
                             </div>
 
                             <div>

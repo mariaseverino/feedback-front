@@ -4,6 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { useListOrganizations, useMe } from '@/hooks/useMe';
 import { getMe, type User } from '@/lib/api';
 import { auth } from '@/lib/auth.client';
+import { Can } from '@/utils/permissions';
 import {
     createFileRoute,
     Link,
@@ -53,7 +54,6 @@ export function Header() {
     const { data: user, isLoading } = useMe();
 
     const { data: organizations = [] } = useListOrganizations();
-    // const { data: organizations } = auth.useListOrganizations();
     async function handleLogOut() {
         await auth.signOut({
             fetchOptions: {
@@ -88,7 +88,7 @@ export function Header() {
             document.documentElement.classList.remove('dark');
         } else {
             const prefersDark = window.matchMedia(
-                '(prefers-color-scheme: dark)'
+                '(prefers-color-scheme: dark)',
             ).matches;
             if (prefersDark) {
                 document.documentElement.classList.add('dark');
@@ -112,26 +112,22 @@ export function Header() {
                         />
                     )}
                 </div>
-                <div className="bg-card/10 flex rounded-full">
+                <div className="bg-card/10 flex rounded-full items-center h-7">
                     <button
-                        className={`${theme == 'light' ? 'bg-foreground/10' : ''} px-3 rounded-full`}
+                        className={`${theme == 'light' ? 'bg-foreground/10' : ''} size-8 rounded-full`}
                         onClick={() => handleChangeTheme('light')}
                     >
-                        <Sun className="m-auto " />
+                        <Sun className="m-auto size-5" />
                     </button>
                     <button
-                        className={`${theme == 'dark' ? 'bg-foreground/10' : ''} px-3 rounded-full`}
+                        className={`${theme == 'dark' ? 'bg-foreground/10' : ''} size-8 rounded-full`}
                         onClick={() => handleChangeTheme('dark')}
                     >
-                        <Moon className="m-auto" />
+                        <Moon className="m-auto size-5" />
                     </button>
                 </div>
                 <div className="flex gap-2">
-                    {/* {getIcon('superHeroi1')} */}
-                    <div
-                        // size="lg"
-                        className="flex bg-card/10 px-3 py-2 rounded-xl gap-2 items-center"
-                    >
+                    <div className="flex bg-card/10 px-3 py-2 rounded-xl gap-2 items-center">
                         <Avatar className="h-8 w-8 rounded-lg">
                             <AvatarImage
                                 src="https://github.com/shadcn.png"
@@ -160,18 +156,22 @@ export function Header() {
                 </div>
             </div>
             <nav className="z-50 flex gap-2">
-                <Link
-                    to="/overview"
-                    className="hover:bg-card/10 [&.active]:text-primary [&.active]:font-medium px-3 py-0.5 hover:rounded-t-md [&.active]:border-b-2 [&.active]:border-primary"
-                >
-                    Overview
-                </Link>
-                <Link
-                    to="/members"
-                    className="hover:bg-card/10 [&.active]:text-primary [&.active]:font-medium px-3 py-0.5 hover:rounded-t-md [&.active]:border-b-2 [&.active]:border-primary"
-                >
-                    Equipe
-                </Link>
+                {user && Can(user.role, 'view_dashboard') && (
+                    <Link
+                        to="/overview"
+                        className="hover:bg-card/10 [&.active]:text-primary [&.active]:font-medium px-3 py-0.5 hover:rounded-t-md [&.active]:border-b-2 [&.active]:border-primary"
+                    >
+                        Overview
+                    </Link>
+                )}
+                {user && Can(user.role, 'view_team') && (
+                    <Link
+                        to="/members"
+                        className="hover:bg-card/10 [&.active]:text-primary [&.active]:font-medium px-3 py-0.5 hover:rounded-t-md [&.active]:border-b-2 [&.active]:border-primary"
+                    >
+                        Equipe
+                    </Link>
+                )}
                 <Link
                     to="/feedbacks"
                     className="hover:bg-card/10 [&.active]:text-primary [&.active]:font-medium px-3 py-0.5 hover:rounded-t-md [&.active]:border-b-2 [&.active]:border-primary"

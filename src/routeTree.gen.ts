@@ -16,8 +16,9 @@ import { Route as InternalSettingsRouteImport } from './routes/_internal/setting
 import { Route as InternalOverviewRouteImport } from './routes/_internal/overview'
 import { Route as InternalMembersRouteImport } from './routes/_internal/members'
 import { Route as InternalFeedbacksRouteImport } from './routes/_internal/feedbacks'
-import { Route as AuthSignUpRouteImport } from './routes/_auth/signUp'
 import { Route as AuthSignInRouteImport } from './routes/_auth/signIn'
+import { Route as AuthSignUpIndexRouteImport } from './routes/_auth/signUp/index'
+import { Route as AuthSignUpInvitationIdRouteImport } from './routes/_auth/signUp/$invitationId'
 
 const InternalRoute = InternalRouteImport.update({
   id: '/_internal',
@@ -53,89 +54,101 @@ const InternalFeedbacksRoute = InternalFeedbacksRouteImport.update({
   path: '/feedbacks',
   getParentRoute: () => InternalRoute,
 } as any)
-const AuthSignUpRoute = AuthSignUpRouteImport.update({
-  id: '/_auth/signUp',
-  path: '/signUp',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthSignInRoute = AuthSignInRouteImport.update({
   id: '/_auth/signIn',
   path: '/signIn',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSignUpIndexRoute = AuthSignUpIndexRouteImport.update({
+  id: '/_auth/signUp/',
+  path: '/signUp/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSignUpInvitationIdRoute = AuthSignUpInvitationIdRouteImport.update({
+  id: '/_auth/signUp/$invitationId',
+  path: '/signUp/$invitationId',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/signIn': typeof AuthSignInRoute
-  '/signUp': typeof AuthSignUpRoute
   '/feedbacks': typeof InternalFeedbacksRoute
   '/members': typeof InternalMembersRoute
   '/overview': typeof InternalOverviewRoute
   '/settings': typeof InternalSettingsRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/signUp/$invitationId': typeof AuthSignUpInvitationIdRoute
+  '/signUp': typeof AuthSignUpIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/signIn': typeof AuthSignInRoute
-  '/signUp': typeof AuthSignUpRoute
   '/feedbacks': typeof InternalFeedbacksRoute
   '/members': typeof InternalMembersRoute
   '/overview': typeof InternalOverviewRoute
   '/settings': typeof InternalSettingsRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/signUp/$invitationId': typeof AuthSignUpInvitationIdRoute
+  '/signUp': typeof AuthSignUpIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_internal': typeof InternalRouteWithChildren
   '/_auth/signIn': typeof AuthSignInRoute
-  '/_auth/signUp': typeof AuthSignUpRoute
   '/_internal/feedbacks': typeof InternalFeedbacksRoute
   '/_internal/members': typeof InternalMembersRoute
   '/_internal/overview': typeof InternalOverviewRoute
   '/_internal/settings': typeof InternalSettingsRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/_auth/signUp/$invitationId': typeof AuthSignUpInvitationIdRoute
+  '/_auth/signUp/': typeof AuthSignUpIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/signIn'
-    | '/signUp'
     | '/feedbacks'
     | '/members'
     | '/overview'
     | '/settings'
     | '/demo/tanstack-query'
+    | '/signUp/$invitationId'
+    | '/signUp'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/signIn'
-    | '/signUp'
     | '/feedbacks'
     | '/members'
     | '/overview'
     | '/settings'
     | '/demo/tanstack-query'
+    | '/signUp/$invitationId'
+    | '/signUp'
   id:
     | '__root__'
     | '/'
     | '/_internal'
     | '/_auth/signIn'
-    | '/_auth/signUp'
     | '/_internal/feedbacks'
     | '/_internal/members'
     | '/_internal/overview'
     | '/_internal/settings'
     | '/demo/tanstack-query'
+    | '/_auth/signUp/$invitationId'
+    | '/_auth/signUp/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   InternalRoute: typeof InternalRouteWithChildren
   AuthSignInRoute: typeof AuthSignInRoute
-  AuthSignUpRoute: typeof AuthSignUpRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
+  AuthSignUpInvitationIdRoute: typeof AuthSignUpInvitationIdRoute
+  AuthSignUpIndexRoute: typeof AuthSignUpIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -189,18 +202,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InternalFeedbacksRouteImport
       parentRoute: typeof InternalRoute
     }
-    '/_auth/signUp': {
-      id: '/_auth/signUp'
-      path: '/signUp'
-      fullPath: '/signUp'
-      preLoaderRoute: typeof AuthSignUpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_auth/signIn': {
       id: '/_auth/signIn'
       path: '/signIn'
       fullPath: '/signIn'
       preLoaderRoute: typeof AuthSignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth/signUp/': {
+      id: '/_auth/signUp/'
+      path: '/signUp'
+      fullPath: '/signUp'
+      preLoaderRoute: typeof AuthSignUpIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth/signUp/$invitationId': {
+      id: '/_auth/signUp/$invitationId'
+      path: '/signUp/$invitationId'
+      fullPath: '/signUp/$invitationId'
+      preLoaderRoute: typeof AuthSignUpInvitationIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -228,8 +248,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   InternalRoute: InternalRouteWithChildren,
   AuthSignInRoute: AuthSignInRoute,
-  AuthSignUpRoute: AuthSignUpRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
+  AuthSignUpInvitationIdRoute: AuthSignUpInvitationIdRoute,
+  AuthSignUpIndexRoute: AuthSignUpIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -280,7 +280,7 @@ interface Member {
 
 interface Invite {
     id: string;
-    organizationId: string;
+    // organizationId: string;
     email: string;
     role: 'member' | 'admin' | 'owner';
     createdAt: Date;
@@ -290,7 +290,7 @@ export function MembersTable() {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-        {}
+        {},
     );
     const [rowSelection, setRowSelection] = useState({});
 
@@ -391,7 +391,7 @@ export function MembersTable() {
                                                 : flexRender(
                                                       header.column.columnDef
                                                           .header,
-                                                      header.getContext()
+                                                      header.getContext(),
                                                   )}
                                         </TableHead>
                                     );
@@ -412,7 +412,7 @@ export function MembersTable() {
                                         <TableCell key={cell.id}>
                                             {flexRender(
                                                 cell.column.columnDef.cell,
-                                                cell.getContext()
+                                                cell.getContext(),
                                             )}
                                         </TableCell>
                                     ))}

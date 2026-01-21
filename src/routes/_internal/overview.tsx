@@ -1,12 +1,18 @@
 import { ChartBarMultiple } from '@/components/chart-bar-multiple';
 import { SectionCards } from '@/components/section-cards';
 import { useMe } from '@/hooks/useMe';
-import { getMe } from '@/lib/api';
-import { useQuery } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
+import type { User } from '@/lib/api';
+import { Can } from '@/utils/permissions';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_internal/overview')({
     component: RouteComponent,
+    beforeLoad: ({ context }) => {
+        const user = context.user as User;
+        if (!Can(user.role, 'view_dashboard')) {
+            throw redirect({ to: '/feedbacks' });
+        }
+    },
 });
 
 // Estrutura para um KPI (Key Performance Indicator)

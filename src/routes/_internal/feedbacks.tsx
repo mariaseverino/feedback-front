@@ -1,5 +1,6 @@
 import { FeedbackModal } from '@/components/feedback-modal';
 import { Button } from '@/components/ui/button';
+import { useSendFeedback } from '@/hooks/useFeedback';
 import { createFileRoute } from '@tanstack/react-router';
 import {
     ChevronLeft,

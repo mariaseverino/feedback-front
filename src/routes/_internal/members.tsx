@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { auth } from '@/lib/auth.client';
 import { InviteTable } from '@/components/invites-table';
+import type { User } from '@/lib/api';
+import { Can } from '@/utils/permissions';
 
 export const inviteFormSchema = z.object({
     email: z.string().min(1, 'Email obrigatório').email('Email inválido'),
@@ -23,6 +25,12 @@ export type InviteData = z.infer<typeof inviteFormSchema>;
 
 export const Route = createFileRoute('/_internal/members')({
     component: RouteComponent,
+    beforeLoad: ({ context }) => {
+        const user = context.user as User;
+        if (!Can(user.role, 'view_dashboard')) {
+            throw redirect({ to: '/feedbacks' });
+        }
+    },
 });
 
 type InviteVariables = {
@@ -43,40 +51,40 @@ function RouteComponent() {
 
     const { data: organizations } = auth.useListOrganizations();
 
+    const [tab, setTab] = useState<'active_members' | 'pending_members'>(
+        'active_members',
+    );
+
     const queryClient = useQueryClient();
 
     const { mutateAsync: sendInviteFn } = useMutation({
         mutationFn: (data: InviteVariables) =>
             auth.organization.inviteMember({
-                email: data.email, // required
-                role: data.role, // required
+                email: data.email,
+                role: data.role,
                 organizationId: organizations![0].id,
                 resend: true,
             }),
         onSuccess(_, variables) {
-            console.log('sucesso');
             queryClient.setQueryData(['invites'], (data: any) => {
-                console.log({ data: data });
                 return [
                     ...data,
                     {
                         id: crypto.randomUUID(),
                         email: variables.email,
-                        role: 'member',
+                        role: variables.role,
                         createdAt: new Date().toISOString(),
                     },
                 ];
             });
+
+            setTab('pending_members');
         },
         onError(error) {
             alert('deu errro');
             console.log(error);
         },
     });
-
-    const [tab, setTab] = useState<'active_members' | 'pending_members'>(
-        'active_members'
-    );
 
     async function handleInviteForm(credentials: InviteData) {
         await sendInviteFn({
