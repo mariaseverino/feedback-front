@@ -67,7 +67,7 @@ export function FeedbackModal() {
     }
 
     return (
-        <div>teste</div>
+        <div>+</div>
         // <Dialog>
         //     <DialogTrigger asChild>
         //         <Button>Enviar Feedback</Button>

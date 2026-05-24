@@ -22,12 +22,16 @@ export const getCategoryIcon = (category: FeedbackType) => {
     }
 };
 export const getCategoryBg = (category: FeedbackType) => {
+    return 'bg-primary';
+};
+
+export const getCategoryBorder = (category: FeedbackType) => {
     switch (category) {
         case 'ELOGIO':
-            return 'bg-[#395917]';
+            return 'border-[#1D711C]';
         case 'SUGESTAO':
-            return 'bg-[#592f17]';
+            return 'border-[#995E32]';
         case 'CRITICA':
-            return 'bg-[#172a59]';
+            return 'border-[#2A65C1]';
     }
 };
