@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as InternalRouteImport } from './routes/_internal'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
+import { Route as InternalVisaoGeralRouteImport } from './routes/_internal/visao-geral'
 import { Route as InternalSettingsRouteImport } from './routes/_internal/settings'
 import { Route as InternalOverviewRouteImport } from './routes/_internal/overview'
 import { Route as InternalMembersRouteImport } from './routes/_internal/members'
@@ -33,6 +34,11 @@ const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
   id: '/demo/tanstack-query',
   path: '/demo/tanstack-query',
   getParentRoute: () => rootRouteImport,
+} as any)
+const InternalVisaoGeralRoute = InternalVisaoGeralRouteImport.update({
+  id: '/visao-geral',
+  path: '/visao-geral',
+  getParentRoute: () => InternalRoute,
 } as any)
 const InternalSettingsRoute = InternalSettingsRouteImport.update({
   id: '/settings',
@@ -77,6 +83,7 @@ export interface FileRoutesByFullPath {
   '/members': typeof InternalMembersRoute
   '/overview': typeof InternalOverviewRoute
   '/settings': typeof InternalSettingsRoute
+  '/visao-geral': typeof InternalVisaoGeralRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/signUp/$invitationId': typeof AuthSignUpInvitationIdRoute
   '/signUp': typeof AuthSignUpIndexRoute
@@ -88,6 +95,7 @@ export interface FileRoutesByTo {
   '/members': typeof InternalMembersRoute
   '/overview': typeof InternalOverviewRoute
   '/settings': typeof InternalSettingsRoute
+  '/visao-geral': typeof InternalVisaoGeralRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/signUp/$invitationId': typeof AuthSignUpInvitationIdRoute
   '/signUp': typeof AuthSignUpIndexRoute
@@ -101,6 +109,7 @@ export interface FileRoutesById {
   '/_internal/members': typeof InternalMembersRoute
   '/_internal/overview': typeof InternalOverviewRoute
   '/_internal/settings': typeof InternalSettingsRoute
+  '/_internal/visao-geral': typeof InternalVisaoGeralRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/_auth/signUp/$invitationId': typeof AuthSignUpInvitationIdRoute
   '/_auth/signUp/': typeof AuthSignUpIndexRoute
@@ -114,6 +123,7 @@ export interface FileRouteTypes {
     | '/members'
     | '/overview'
     | '/settings'
+    | '/visao-geral'
     | '/demo/tanstack-query'
     | '/signUp/$invitationId'
     | '/signUp'
@@ -125,6 +135,7 @@ export interface FileRouteTypes {
     | '/members'
     | '/overview'
     | '/settings'
+    | '/visao-geral'
     | '/demo/tanstack-query'
     | '/signUp/$invitationId'
     | '/signUp'
@@ -137,6 +148,7 @@ export interface FileRouteTypes {
     | '/_internal/members'
     | '/_internal/overview'
     | '/_internal/settings'
+    | '/_internal/visao-geral'
     | '/demo/tanstack-query'
     | '/_auth/signUp/$invitationId'
     | '/_auth/signUp/'
@@ -173,6 +185,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/demo/tanstack-query'
       preLoaderRoute: typeof DemoTanstackQueryRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_internal/visao-geral': {
+      id: '/_internal/visao-geral'
+      path: '/visao-geral'
+      fullPath: '/visao-geral'
+      preLoaderRoute: typeof InternalVisaoGeralRouteImport
+      parentRoute: typeof InternalRoute
     }
     '/_internal/settings': {
       id: '/_internal/settings'
@@ -231,6 +250,7 @@ interface InternalRouteChildren {
   InternalMembersRoute: typeof InternalMembersRoute
   InternalOverviewRoute: typeof InternalOverviewRoute
   InternalSettingsRoute: typeof InternalSettingsRoute
+  InternalVisaoGeralRoute: typeof InternalVisaoGeralRoute
 }
 
 const InternalRouteChildren: InternalRouteChildren = {
@@ -238,6 +258,7 @@ const InternalRouteChildren: InternalRouteChildren = {
   InternalMembersRoute: InternalMembersRoute,
   InternalOverviewRoute: InternalOverviewRoute,
   InternalSettingsRoute: InternalSettingsRoute,
+  InternalVisaoGeralRoute: InternalVisaoGeralRoute,
 }
 
 const InternalRouteWithChildren = InternalRoute._addFileChildren(

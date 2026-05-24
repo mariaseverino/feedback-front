@@ -13,7 +13,18 @@ import {
     useNavigate,
 } from '@tanstack/react-router';
 
-import { LogOut, MessagesSquare, Moon, Sun } from 'lucide-react';
+import {
+    ChartNoAxesColumn,
+    Component,
+    LogOut,
+    MessageCircleQuestionMark,
+    MessageSquare,
+    MessagesSquare,
+    Moon,
+    Send,
+    Settings,
+    Sun,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export const Route = createFileRoute('/_internal')({
@@ -36,13 +47,92 @@ export const Route = createFileRoute('/_internal')({
 
 export function InternalLayout() {
     return (
-        <div className="bg-background max-h-screen flex flex-col h-screen py-5 gap-14">
-            <Header />
+        <div className="flex h-screen w-screen bg-background py-11 overflow-hidden">
+            <SideBar />
 
-            <main className={`flex flex-1 w-7xl mx-auto h-full`}>
+            <main className="w-full pr-12">
                 <Outlet />
             </main>
         </div>
+    );
+}
+
+function SideBar() {
+    const navigate = useNavigate();
+    async function handleLogOut() {
+        await auth.signOut({
+            fetchOptions: {
+                onSuccess: () => {
+                    navigate({ to: '/signIn' });
+                },
+            },
+        });
+    }
+    return (
+        <aside className="px-10 flex flex-col justify-between">
+            <div>
+                <div className="flex items-center justify-center mb-9">
+                    <MessagesSquare className="size-12 text-primary" />
+                </div>
+                <div className="bg-white rounded-[54px] p-2 flex flex-col gap-10">
+                    <div>
+                        <Link
+                            to="/visao-geral"
+                            className="size-15 rounded-full flex items-center justify-center text-2xl [&.active]:text-white [&.active]:bg-black hover:bg-black/5"
+                        >
+                            <Component />
+                        </Link>
+                        <Link
+                            to="/feedbacks"
+                            className="size-15 rounded-full flex items-center justify-center text-2xl [&.active]:text-white [&.active]:bg-black hover:bg-black/5"
+                        >
+                            <MessageSquare />
+                        </Link>
+                        <Link
+                            to="/"
+                            className="size-15 rounded-full flex items-center justify-center text-2xl [&.active]:text-white [&.active]:bg-black hover:bg-black/5"
+                        >
+                            <Send />
+                        </Link>
+                        <Link
+                            to="/"
+                            className="size-15 rounded-full flex items-center justify-center text-2xl [&.active]:text-white [&.active]:bg-black hover:bg-black/5"
+                        >
+                            <ChartNoAxesColumn />
+                        </Link>
+                    </div>
+
+                    <div>
+                        <Link
+                            to="/"
+                            className="size-15 rounded-full flex items-center justify-center text-2xl [&.active]:text-white [&.active]:bg-black hover:bg-black/5"
+                        >
+                            <Settings />
+                        </Link>
+                        <Link
+                            to="/"
+                            className="size-15 rounded-full flex items-center justify-center text-2xl [&.active]:text-white [&.active]:bg-black hover:bg-black/5"
+                        >
+                            <MessageCircleQuestionMark />
+                        </Link>
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex flex-col items-center justify-center gap-8">
+                <button
+                    onClick={handleLogOut}
+                    className="size-15 rounded-full flex items-center justify-center [&.active]:text-white [&.active]:bg-black hover:bg-black/5"
+                >
+                    <LogOut />
+                </button>
+
+                <Avatar className="size-12 rounded-full">
+                    <AvatarImage src="https://github.com/shadcn.png" alt="" />
+                    <AvatarFallback className="rounded-full">CN</AvatarFallback>
+                </Avatar>
+            </div>
+        </aside>
     );
 }
 
@@ -156,22 +246,22 @@ export function Header() {
                 </div>
             </div>
             <nav className="z-50 flex gap-2">
-                {user && Can(user.role, 'view_dashboard') && (
-                    <Link
-                        to="/overview"
-                        className="hover:bg-card/10 [&.active]:text-primary [&.active]:font-medium px-3 py-0.5 hover:rounded-t-md [&.active]:border-b-2 [&.active]:border-primary"
-                    >
-                        Overview
-                    </Link>
-                )}
-                {user && Can(user.role, 'view_team') && (
-                    <Link
-                        to="/members"
-                        className="hover:bg-card/10 [&.active]:text-primary [&.active]:font-medium px-3 py-0.5 hover:rounded-t-md [&.active]:border-b-2 [&.active]:border-primary"
-                    >
-                        Equipe
-                    </Link>
-                )}
+                {/* {user && Can(user.role, 'view_dashboard') && ( */}
+                <Link
+                    to="/overview"
+                    className="hover:bg-card/10 [&.active]:text-primary [&.active]:font-medium px-3 py-0.5 hover:rounded-t-md [&.active]:border-b-2 [&.active]:border-primary"
+                >
+                    Overview
+                </Link>
+                {/* )} */}
+                {/* {user && Can(user.role, 'view_team') && ( */}
+                <Link
+                    to="/members"
+                    className="hover:bg-card/10 [&.active]:text-primary [&.active]:font-medium px-3 py-0.5 hover:rounded-t-md [&.active]:border-b-2 [&.active]:border-primary"
+                >
+                    Equipe
+                </Link>
+                {/* )} */}
                 <Link
                     to="/feedbacks"
                     className="hover:bg-card/10 [&.active]:text-primary [&.active]:font-medium px-3 py-0.5 hover:rounded-t-md [&.active]:border-b-2 [&.active]:border-primary"

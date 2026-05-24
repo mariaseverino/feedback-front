@@ -10,7 +10,7 @@ export const Route = createFileRoute('/_internal/overview')({
     beforeLoad: ({ context }) => {
         const user = context.user as User;
         if (!Can(user.role, 'view_dashboard')) {
-            throw redirect({ to: '/feedbacks' });
+            // throw redirect({ to: '/feedbacks' });
         }
     },
 });
