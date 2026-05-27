@@ -24,6 +24,7 @@ import {
     Send,
     Settings,
     Sun,
+    Users,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -93,6 +94,12 @@ function SideBar() {
                             className="size-15 rounded-full flex items-center justify-center text-2xl [&.active]:text-white [&.active]:bg-black hover:bg-black/5"
                         >
                             <Send />
+                        </Link>
+                        <Link
+                            to="/members"
+                            className="size-15 rounded-full flex items-center justify-center text-2xl [&.active]:text-white [&.active]:bg-black hover:bg-black/5"
+                        >
+                            <Users />
                         </Link>
                         <Link
                             to="/"
