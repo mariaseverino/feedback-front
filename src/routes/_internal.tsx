@@ -90,7 +90,7 @@ function SideBar() {
                             <MessageSquare />
                         </Link>
                         <Link
-                            to="/"
+                            to="/enviar-feedback"
                             className="size-15 rounded-full flex items-center justify-center text-2xl [&.active]:text-white [&.active]:bg-black hover:bg-black/5"
                         >
                             <Send />

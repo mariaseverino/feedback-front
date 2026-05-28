@@ -17,6 +17,7 @@ import { Route as InternalSettingsRouteImport } from './routes/_internal/setting
 import { Route as InternalOverviewRouteImport } from './routes/_internal/overview'
 import { Route as InternalMembersRouteImport } from './routes/_internal/members'
 import { Route as InternalFeedbacksRouteImport } from './routes/_internal/feedbacks'
+import { Route as InternalEnviarFeedbackRouteImport } from './routes/_internal/enviar-feedback'
 import { Route as AuthSignInRouteImport } from './routes/_auth/signIn'
 import { Route as AuthSignUpIndexRouteImport } from './routes/_auth/signUp/index'
 import { Route as AuthSignUpInvitationIdRouteImport } from './routes/_auth/signUp/$invitationId'
@@ -60,6 +61,11 @@ const InternalFeedbacksRoute = InternalFeedbacksRouteImport.update({
   path: '/feedbacks',
   getParentRoute: () => InternalRoute,
 } as any)
+const InternalEnviarFeedbackRoute = InternalEnviarFeedbackRouteImport.update({
+  id: '/enviar-feedback',
+  path: '/enviar-feedback',
+  getParentRoute: () => InternalRoute,
+} as any)
 const AuthSignInRoute = AuthSignInRouteImport.update({
   id: '/_auth/signIn',
   path: '/signIn',
@@ -79,6 +85,7 @@ const AuthSignUpInvitationIdRoute = AuthSignUpInvitationIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/signIn': typeof AuthSignInRoute
+  '/enviar-feedback': typeof InternalEnviarFeedbackRoute
   '/feedbacks': typeof InternalFeedbacksRoute
   '/members': typeof InternalMembersRoute
   '/overview': typeof InternalOverviewRoute
@@ -91,6 +98,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/signIn': typeof AuthSignInRoute
+  '/enviar-feedback': typeof InternalEnviarFeedbackRoute
   '/feedbacks': typeof InternalFeedbacksRoute
   '/members': typeof InternalMembersRoute
   '/overview': typeof InternalOverviewRoute
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_internal': typeof InternalRouteWithChildren
   '/_auth/signIn': typeof AuthSignInRoute
+  '/_internal/enviar-feedback': typeof InternalEnviarFeedbackRoute
   '/_internal/feedbacks': typeof InternalFeedbacksRoute
   '/_internal/members': typeof InternalMembersRoute
   '/_internal/overview': typeof InternalOverviewRoute
@@ -119,6 +128,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/signIn'
+    | '/enviar-feedback'
     | '/feedbacks'
     | '/members'
     | '/overview'
@@ -131,6 +141,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/signIn'
+    | '/enviar-feedback'
     | '/feedbacks'
     | '/members'
     | '/overview'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_internal'
     | '/_auth/signIn'
+    | '/_internal/enviar-feedback'
     | '/_internal/feedbacks'
     | '/_internal/members'
     | '/_internal/overview'
@@ -221,6 +233,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InternalFeedbacksRouteImport
       parentRoute: typeof InternalRoute
     }
+    '/_internal/enviar-feedback': {
+      id: '/_internal/enviar-feedback'
+      path: '/enviar-feedback'
+      fullPath: '/enviar-feedback'
+      preLoaderRoute: typeof InternalEnviarFeedbackRouteImport
+      parentRoute: typeof InternalRoute
+    }
     '/_auth/signIn': {
       id: '/_auth/signIn'
       path: '/signIn'
@@ -246,6 +265,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface InternalRouteChildren {
+  InternalEnviarFeedbackRoute: typeof InternalEnviarFeedbackRoute
   InternalFeedbacksRoute: typeof InternalFeedbacksRoute
   InternalMembersRoute: typeof InternalMembersRoute
   InternalOverviewRoute: typeof InternalOverviewRoute
@@ -254,6 +274,7 @@ interface InternalRouteChildren {
 }
 
 const InternalRouteChildren: InternalRouteChildren = {
+  InternalEnviarFeedbackRoute: InternalEnviarFeedbackRoute,
   InternalFeedbacksRoute: InternalFeedbacksRoute,
   InternalMembersRoute: InternalMembersRoute,
   InternalOverviewRoute: InternalOverviewRoute,

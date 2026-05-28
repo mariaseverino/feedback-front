@@ -27,7 +27,7 @@ export const Route = createFileRoute('/_internal/members')({
     beforeLoad: ({ context }) => {
         const user = context.user as User;
         if (!Can(user.role, 'view_dashboard')) {
-            throw redirect({ to: '/feedbacks' });
+            // throw redirect({ to: '/feedbacks' });
         }
     },
 });
@@ -119,7 +119,7 @@ function RouteComponent() {
                                 id="email"
                                 type="text"
                                 autoComplete="email"
-                                className="w-96 placeholder:text-muted-foreground rounded-md bg-white/5 px-3 text-base text-muted-foreground outline-1 -outline-offset-1 outline-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm/6 h-9"
+                                className="w-96 placeholder:text-muted-foreground rounded-md bg-white/5 px-3 text-base text-muted-foreground outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm/6 h-9"
                                 placeholder="email@empresa.com"
                             />
                             <Button type="submit">Enviar convite</Button>
