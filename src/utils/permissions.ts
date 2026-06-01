@@ -5,7 +5,8 @@ type Permission =
     | 'view_team'
     | 'view_feedbacks'
     | 'view_billing'
-    | 'view_help';
+    | 'view_help'
+    | 'manage_organization';
 
 const rolePermissions: Record<Role, Permission[]> = {
     Owner: [
@@ -23,6 +24,7 @@ const rolePermissions: Record<Role, Permission[]> = {
         'view_feedbacks',
         'view_help',
         'view_billing',
+        'manage_organization',
     ],
     Member: ['view_feedbacks'],
 };

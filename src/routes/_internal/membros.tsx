@@ -23,7 +23,7 @@ export const inviteFormSchema = z.object({
 
 export type InviteData = z.infer<typeof inviteFormSchema>;
 
-export const Route = createFileRoute('/_internal/members')({
+export const Route = createFileRoute('/_internal/membros')({
     component: RouteComponent,
     beforeLoad: ({ context }) => {
         const user = context.user as User;

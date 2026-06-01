@@ -48,10 +48,10 @@ export const Route = createFileRoute('/_internal')({
 
 export function InternalLayout() {
     return (
-        <div className="flex h-screen w-screen bg-background py-11 overflow-hidden">
+        <div className="flex min-h-screen w-screen bg-background overflow-hidden relative">
             <SideBar />
 
-            <main className="w-full pr-12">
+            <main className="w-full pr-18 py-11 pl-43 pt-3">
                 <Outlet />
             </main>
         </div>
@@ -70,7 +70,7 @@ function SideBar() {
         });
     }
     return (
-        <aside className="px-10 flex flex-col justify-between">
+        <aside className="px-10 flex flex-col justify-between fixed h-screen py-11">
             <div>
                 <div className="flex items-center justify-center mb-9">
                     <MessagesSquare className="size-12 text-primary" />
@@ -96,7 +96,7 @@ function SideBar() {
                             <Send />
                         </Link>
                         <Link
-                            to="/members"
+                            to="/membros"
                             className="size-15 rounded-full flex items-center justify-center text-2xl [&.active]:text-white [&.active]:bg-black hover:bg-black/5"
                         >
                             <Users />
@@ -111,7 +111,7 @@ function SideBar() {
 
                     <div>
                         <Link
-                            to="/"
+                            to="/configuracoes"
                             className="size-15 rounded-full flex items-center justify-center text-2xl [&.active]:text-white [&.active]:bg-black hover:bg-black/5"
                         >
                             <Settings />

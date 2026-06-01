@@ -4,35 +4,31 @@ import {
     getCategoryColor,
     getCategoryIcon,
 } from '@/lib/feedback-utils';
+import { Badge } from './ui/badge';
+import { formatDistance } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 export function FeedbackCard({ feedback }: { feedback: Feedback }) {
     return (
         <div
-            className={`bg-white rounded-t-3xl flex flex-col border-l-4 py-5 ${getCategoryBorder(feedback.type)}`}
+            className={`bg-white rounded-3xl flex flex-col border py-5 shadow-sm ${getCategoryBorder(feedback.type)}`}
         >
-            {/* // <div
-        //     className={`${getCategoryBg(feedback.type)} rounded-4xl flex flex-col overflow-hidden`}
-        // > */}
             <div className="flex items-center justify-between px-5 mb-3">
-                <div className="text-muted-foreground font-bold">
-                    De:{' '}
-                    <span className="text-foreground">
-                        {feedback.anonymous ? 'Anonimo' : `${feedback.sender}`}
-                    </span>
+                <div className="font-medium text-muted-foreground">
+                    {feedback.anonymous ? 'Anônimo' : feedback.sender}
                 </div>
-                <div
-                    className={`${getCategoryColor(feedback.type)} py-0.5 px-2 rounded-md`}
-                >
+                <Badge className={getCategoryColor(feedback.type)}>
                     {getCategoryIcon(feedback.type)}
-                    {feedback.type}
-                </div>
+                    <span className="ml-1">{feedback.type}</span>
+                </Badge>
             </div>
             <div className="px-5 flex flex-col gap-4 justify-between h-full">
                 <div>{feedback.content}</div>
-                <div className="text-muted-foreground text-base">
-                    {new Intl.DateTimeFormat('pt-BR').format(
-                        feedback.createdAt,
-                    )}
+                <div className="text-muted-foreground text-sm">
+                    {formatDistance(new Date(feedback.createdAt), new Date(), {
+                        addSuffix: true,
+                        locale: ptBR,
+                    })}
                 </div>
             </div>
         </div>
@@ -91,6 +87,76 @@ export function FeedbackCard({ feedback }: { feedback: Feedback }) {
 //                     <MessageSquare className="size-5 mt-1 text-[#6C63FF]" />
 //                 </div>
 //                 <div className="text-muted-foreground">{feedback.content}</div>
+//             </div>
+//         </div>
+//     );
+// }
+
+// import type { Feedback } from '@/hooks/useFeedback';
+// import {
+//     getCategoryBorder,
+//     getCategoryColor,
+//     getCategoryIcon,
+// } from '@/lib/feedback-utils';
+
+// export function FeedbackCard({ feedback }: { feedback: Feedback }) {
+//     return (
+//         <div
+//             className={`
+//                 bg-card
+//                 rounded-2xl
+//                 border-l-4
+//                 min-h-[220px]
+//                 flex
+//                 flex-col
+//                 shadow-sm
+//                 transition-all
+//                 hover:shadow-md
+//                 hover:-translate-y-1
+//                 ${getCategoryBorder(feedback.type)}
+//             `}
+//         >
+//             <div className="flex items-center justify-between px-5 pt-5">
+//                 <div className="flex flex-col">
+//                     <span className="text-xs text-muted-foreground">
+//                         Remetente
+//                     </span>
+
+//                     <span className="font-semibold">
+//                         {feedback.anonymous ? 'Anônimo' : feedback.sender}
+//                     </span>
+//                 </div>
+
+//                 <div
+//                     className={`
+//                         flex
+//                         items-center
+//                         gap-1
+//                         rounded-full
+//                         px-3
+//                         py-1
+//                         text-xs
+//                         font-medium
+//                         ${getCategoryColor(feedback.type)}
+//                     `}
+//                 >
+//                     {getCategoryIcon(feedback.type)}
+//                     {feedback.type}
+//                 </div>
+//             </div>
+
+//             <div className="flex flex-col flex-1 px-5 py-4">
+//                 <p className="flex-1 text-sm leading-relaxed line-clamp-5">
+//                     {feedback.content}
+//                 </p>
+
+//                 <div className="pt-4 text-sm text-muted-foreground">
+//                     {new Intl.DateTimeFormat('pt-BR', {
+//                         day: '2-digit',
+//                         month: 'short',
+//                         year: 'numeric',
+//                     }).format(new Date(feedback.createdAt))}
+//                 </div>
 //             </div>
 //         </div>
 //     );

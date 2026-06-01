@@ -22,6 +22,7 @@ import {
     CommandItem,
     CommandList,
 } from '@/components/ui/command';
+import { Field } from '@/components/field';
 
 export const Route = createFileRoute('/_internal/enviar-feedback')({
     component: RouteComponent,
@@ -75,7 +76,7 @@ function RouteComponent() {
     }
 
     return (
-        <div className="w-full flex flex-col gap-10 h-full">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-6 py-8">
             <div>
                 <H1>Envie um feedback!</H1>
                 <p className="text-lg mb-4 text-muted-foreground">
@@ -84,17 +85,14 @@ function RouteComponent() {
                 </p>
             </div>
 
-            <div className="bg-white rounded-[27px] p-7 w-lg mx-auto">
+            <div className="rounded-3xl border bg-white shadow-sm p-7 mx-auto flex max-w-5xl">
                 <form
                     onSubmit={handleSubmit(handleSendFeedbackForm)}
                     className="flex flex-col gap-5"
                 >
                     <div className="grid gap-4">
                         <div className="grid gap-3">
-                            <div className="gap-3 grid">
-                                <label htmlFor="category">
-                                    Tipo de feedback
-                                </label>
+                            <Field label="Tipo de feedback">
                                 <Controller
                                     control={control}
                                     name="category"
@@ -102,11 +100,9 @@ function RouteComponent() {
                                         <CategorySelector field={field} />
                                     )}
                                 />
-                            </div>
+                            </Field>
 
-                            <div className="gap-3 grid">
-                                <label htmlFor="category">Enviar para</label>
-
+                            <Field label="Enviar para">
                                 <Controller
                                     control={control}
                                     name="memberId"
@@ -119,17 +115,15 @@ function RouteComponent() {
                                         />
                                     )}
                                 />
-                            </div>
+                            </Field>
                         </div>
-                        <div className="gap-3 grid">
-                            <label htmlFor="feedback">Seu feedback</label>
+                        <Field label="Seu feedback">
                             <textarea
-                                className="text-muted-foreground focus-visible:primary/50 min-h-16 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs md:text-sm placeholder:text-muted-foreground border-input focus:outline-2 focus:border-primary/30 focus:border focus:-outline-offset-3
-                        p-4   outline-hidden  hover:ring-primary"
+                                className="text-muted-foreground focus-visible:primary/50 min-h-16 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs md:text-sm placeholder:text-muted-foreground border-input focus:outline-2 focus:border-primary/30 focus:border focus:-outline-offset-3 p-4 outline-hidden hover:ring-primary"
                                 placeholder="Escreva seu feedback aqui..."
                                 {...register('feedback')}
                             />
-                        </div>
+                        </Field>
 
                         <label className="flex items-start gap-3 rounded-lg border p-3 has-aria-checked:border-primary has-aria-checked:bg-primary/20 bg-primary/10 hover:bg-primary/15">
                             <Checkbox

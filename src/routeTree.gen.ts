@@ -15,9 +15,11 @@ import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-qu
 import { Route as InternalVisaoGeralRouteImport } from './routes/_internal/visao-geral'
 import { Route as InternalSettingsRouteImport } from './routes/_internal/settings'
 import { Route as InternalOverviewRouteImport } from './routes/_internal/overview'
+import { Route as InternalMembrosRouteImport } from './routes/_internal/membros'
 import { Route as InternalMembersRouteImport } from './routes/_internal/members'
 import { Route as InternalFeedbacksRouteImport } from './routes/_internal/feedbacks'
 import { Route as InternalEnviarFeedbackRouteImport } from './routes/_internal/enviar-feedback'
+import { Route as InternalConfiguracoesRouteImport } from './routes/_internal/configuracoes'
 import { Route as AuthSignInRouteImport } from './routes/_auth/signIn'
 import { Route as AuthSignUpIndexRouteImport } from './routes/_auth/signUp/index'
 import { Route as AuthSignUpInvitationIdRouteImport } from './routes/_auth/signUp/$invitationId'
@@ -51,6 +53,11 @@ const InternalOverviewRoute = InternalOverviewRouteImport.update({
   path: '/overview',
   getParentRoute: () => InternalRoute,
 } as any)
+const InternalMembrosRoute = InternalMembrosRouteImport.update({
+  id: '/membros',
+  path: '/membros',
+  getParentRoute: () => InternalRoute,
+} as any)
 const InternalMembersRoute = InternalMembersRouteImport.update({
   id: '/members',
   path: '/members',
@@ -64,6 +71,11 @@ const InternalFeedbacksRoute = InternalFeedbacksRouteImport.update({
 const InternalEnviarFeedbackRoute = InternalEnviarFeedbackRouteImport.update({
   id: '/enviar-feedback',
   path: '/enviar-feedback',
+  getParentRoute: () => InternalRoute,
+} as any)
+const InternalConfiguracoesRoute = InternalConfiguracoesRouteImport.update({
+  id: '/configuracoes',
+  path: '/configuracoes',
   getParentRoute: () => InternalRoute,
 } as any)
 const AuthSignInRoute = AuthSignInRouteImport.update({
@@ -85,9 +97,11 @@ const AuthSignUpInvitationIdRoute = AuthSignUpInvitationIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/signIn': typeof AuthSignInRoute
+  '/configuracoes': typeof InternalConfiguracoesRoute
   '/enviar-feedback': typeof InternalEnviarFeedbackRoute
   '/feedbacks': typeof InternalFeedbacksRoute
   '/members': typeof InternalMembersRoute
+  '/membros': typeof InternalMembrosRoute
   '/overview': typeof InternalOverviewRoute
   '/settings': typeof InternalSettingsRoute
   '/visao-geral': typeof InternalVisaoGeralRoute
@@ -98,9 +112,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/signIn': typeof AuthSignInRoute
+  '/configuracoes': typeof InternalConfiguracoesRoute
   '/enviar-feedback': typeof InternalEnviarFeedbackRoute
   '/feedbacks': typeof InternalFeedbacksRoute
   '/members': typeof InternalMembersRoute
+  '/membros': typeof InternalMembrosRoute
   '/overview': typeof InternalOverviewRoute
   '/settings': typeof InternalSettingsRoute
   '/visao-geral': typeof InternalVisaoGeralRoute
@@ -113,9 +129,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_internal': typeof InternalRouteWithChildren
   '/_auth/signIn': typeof AuthSignInRoute
+  '/_internal/configuracoes': typeof InternalConfiguracoesRoute
   '/_internal/enviar-feedback': typeof InternalEnviarFeedbackRoute
   '/_internal/feedbacks': typeof InternalFeedbacksRoute
   '/_internal/members': typeof InternalMembersRoute
+  '/_internal/membros': typeof InternalMembrosRoute
   '/_internal/overview': typeof InternalOverviewRoute
   '/_internal/settings': typeof InternalSettingsRoute
   '/_internal/visao-geral': typeof InternalVisaoGeralRoute
@@ -128,9 +146,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/signIn'
+    | '/configuracoes'
     | '/enviar-feedback'
     | '/feedbacks'
     | '/members'
+    | '/membros'
     | '/overview'
     | '/settings'
     | '/visao-geral'
@@ -141,9 +161,11 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/signIn'
+    | '/configuracoes'
     | '/enviar-feedback'
     | '/feedbacks'
     | '/members'
+    | '/membros'
     | '/overview'
     | '/settings'
     | '/visao-geral'
@@ -155,9 +177,11 @@ export interface FileRouteTypes {
     | '/'
     | '/_internal'
     | '/_auth/signIn'
+    | '/_internal/configuracoes'
     | '/_internal/enviar-feedback'
     | '/_internal/feedbacks'
     | '/_internal/members'
+    | '/_internal/membros'
     | '/_internal/overview'
     | '/_internal/settings'
     | '/_internal/visao-geral'
@@ -219,6 +243,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InternalOverviewRouteImport
       parentRoute: typeof InternalRoute
     }
+    '/_internal/membros': {
+      id: '/_internal/membros'
+      path: '/membros'
+      fullPath: '/membros'
+      preLoaderRoute: typeof InternalMembrosRouteImport
+      parentRoute: typeof InternalRoute
+    }
     '/_internal/members': {
       id: '/_internal/members'
       path: '/members'
@@ -238,6 +269,13 @@ declare module '@tanstack/react-router' {
       path: '/enviar-feedback'
       fullPath: '/enviar-feedback'
       preLoaderRoute: typeof InternalEnviarFeedbackRouteImport
+      parentRoute: typeof InternalRoute
+    }
+    '/_internal/configuracoes': {
+      id: '/_internal/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/configuracoes'
+      preLoaderRoute: typeof InternalConfiguracoesRouteImport
       parentRoute: typeof InternalRoute
     }
     '/_auth/signIn': {
@@ -265,18 +303,22 @@ declare module '@tanstack/react-router' {
 }
 
 interface InternalRouteChildren {
+  InternalConfiguracoesRoute: typeof InternalConfiguracoesRoute
   InternalEnviarFeedbackRoute: typeof InternalEnviarFeedbackRoute
   InternalFeedbacksRoute: typeof InternalFeedbacksRoute
   InternalMembersRoute: typeof InternalMembersRoute
+  InternalMembrosRoute: typeof InternalMembrosRoute
   InternalOverviewRoute: typeof InternalOverviewRoute
   InternalSettingsRoute: typeof InternalSettingsRoute
   InternalVisaoGeralRoute: typeof InternalVisaoGeralRoute
 }
 
 const InternalRouteChildren: InternalRouteChildren = {
+  InternalConfiguracoesRoute: InternalConfiguracoesRoute,
   InternalEnviarFeedbackRoute: InternalEnviarFeedbackRoute,
   InternalFeedbacksRoute: InternalFeedbacksRoute,
   InternalMembersRoute: InternalMembersRoute,
+  InternalMembrosRoute: InternalMembrosRoute,
   InternalOverviewRoute: InternalOverviewRoute,
   InternalSettingsRoute: InternalSettingsRoute,
   InternalVisaoGeralRoute: InternalVisaoGeralRoute,
