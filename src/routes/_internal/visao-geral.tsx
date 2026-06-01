@@ -10,7 +10,6 @@ import {
     useGetMembersRanking,
     useGetReceivedsFeedback,
     type Feedback,
-    type Kpi,
     type MembersRanking,
 } from '@/hooks/useFeedback';
 import { useMe } from '@/hooks/useMe';
@@ -35,16 +34,16 @@ function RouteComponent() {
 
     return (
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-6 py-8 max-h-[calc(100vh-5.5rem)]">
-            <div className="flex justify-between w-full">
+            <div className="flex w-full">
                 <div>
                     <H1>Ola, {data?.name}!</H1>
                     <p className="text-xl text-muted-foreground">
                         Explore suas atividades recentes
                     </p>
                 </div>
-                <div className="size-15 rounded-full flex items-center justify-center bg-white">
+                {/* <div className="size-15 rounded-full flex items-center justify-center bg-white">
                     <Bell />
-                </div>
+                </div> */}
             </div>
             <section className="flex flex-col gap-3">
                 <div className="grid grid-cols-3 gap-5">

@@ -5,6 +5,7 @@ import {
     type SendFeedbackDto,
 } from '@/lib/api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Trophy } from 'lucide-react';
 
 export type FeedbackType = 'ELOGIO' | 'SUGESTAO' | 'CRITICA';
 
@@ -248,28 +249,50 @@ export function useGetMembersRanking() {
     return { data: members };
 }
 
-export interface Kpi {
+type Kpi = {
     title: string;
     value: number;
-    trending: number;
-}
+    icon?: React.ReactNode;
+
+    trend?: {
+        value: number;
+        label?: string;
+    };
+
+    rank?: {
+        position: number;
+        change?: number;
+        totalUsers?: number;
+    };
+};
 
 export function useGetKpi() {
     const cards: Kpi[] = [
         {
             title: 'Feedbacks Recebidos',
             value: 12,
-            trending: 20,
+            trend: {
+                value: 20,
+                label: 'vs mês anterior',
+            },
         },
         {
             title: 'Feedbacks Enviados',
             value: 8,
-            trending: -20,
+            trend: {
+                value: -20,
+                label: 'vs mês anterior',
+            },
         },
         {
             title: 'Seu Ranking',
-            value: 5,
-            trending: -20,
+            value: 0,
+            icon: <Trophy className="size-5 text-primary" />,
+            rank: {
+                position: 5,
+                change: 3,
+                totalUsers: 42,
+            },
         },
     ];
 
