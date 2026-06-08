@@ -249,50 +249,32 @@ export function useGetMembersRanking() {
     return { data: members };
 }
 
-type Kpi = {
+export type Kpi = {
     title: string;
-    value: number;
-    icon?: React.ReactNode;
-
-    trend?: {
-        value: number;
-        label?: string;
-    };
-
-    rank?: {
-        position: number;
-        change?: number;
-        totalUsers?: number;
-    };
+    currentValue: number;
+    lastValue: number;
+    type: 'trend' | 'rank';
 };
 
 export function useGetKpi() {
     const cards: Kpi[] = [
         {
             title: 'Feedbacks Recebidos',
-            value: 12,
-            trend: {
-                value: 20,
-                label: 'vs mês anterior',
-            },
+            currentValue: 12,
+            lastValue: 15,
+            type: 'trend',
         },
         {
             title: 'Feedbacks Enviados',
-            value: 8,
-            trend: {
-                value: -20,
-                label: 'vs mês anterior',
-            },
+            currentValue: 12,
+            lastValue: 15,
+            type: 'trend',
         },
         {
             title: 'Seu Ranking',
-            value: 0,
-            icon: <Trophy className="size-5 text-primary" />,
-            rank: {
-                position: 5,
-                change: 3,
-                totalUsers: 42,
-            },
+            currentValue: 5,
+            lastValue: 3,
+            type: 'rank',
         },
     ];
 
