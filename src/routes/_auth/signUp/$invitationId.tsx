@@ -58,7 +58,7 @@ function SignUpWithInvitation() {
                         await auth.organization.setActive({
                             organizationId: data.invitation.organizationId,
                         });
-                        navigate({ to: '/feedbacks' });
+                        navigate({ to: '/visao-geral' });
                     }
                 },
             },

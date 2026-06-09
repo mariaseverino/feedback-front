@@ -3,42 +3,29 @@ import { H1 } from '@/components/h1';
 import { H2 } from '@/components/h2';
 import { KpiCard } from '@/components/kapi-card';
 import { Ranking } from '@/components/ranking';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import {
-    useGetKpi,
-    useGetMembersRanking,
-    useGetReceivedsFeedback,
-    type Feedback,
-    type MembersRanking,
-} from '@/hooks/useFeedback';
-import { useMe } from '@/hooks/useMe';
-import {
-    getCategoryBorder,
-    getCategoryColor,
-    getCategoryIcon,
-} from '@/lib/feedback-utils';
-import { cn } from '@/lib/utils';
+import { useGetKpi, useGetReceivedsFeedback } from '@/hooks/useFeedback';
 
 import { createFileRoute } from '@tanstack/react-router';
-import { Bell, Crown, MessageSquareOff } from 'lucide-react';
 
 export const Route = createFileRoute('/_internal/visao-geral')({
     component: RouteComponent,
 });
 
 function RouteComponent() {
-    const { data } = useMe();
     const { data: feedbacks } = useGetReceivedsFeedback();
     const { data: kpi } = useGetKpi();
+
+    const { user } = Route.useRouteContext();
 
     return (
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-6 py-8 max-h-[calc(100vh-5.5rem)]">
             <div className="flex w-full">
                 <div>
-                    <H1>Ola, {data?.name}!</H1>
+                    <H1>Olá, {user.name} 👋</H1>
+                    {/* <H1>Ola, {user.name}!</H1> */}
                     <p className="text-xl text-muted-foreground">
-                        Explore suas atividades recentes
+                        Acompanhe seus feedbacks, desempenho e posição no
+                        ranking da equipe.
                     </p>
                 </div>
                 {/* <div className="size-15 rounded-full flex items-center justify-center bg-white">
@@ -53,10 +40,10 @@ function RouteComponent() {
                         ))}
                     </div>
 
-                    {data?.id && (
+                    {user.id && (
                         <Ranking
                             className="row-span-4 col-span-1"
-                            userId={data.id}
+                            userId={user.id}
                         />
                     )}
 

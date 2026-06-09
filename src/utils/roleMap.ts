@@ -1,5 +1,4 @@
 export const roleMap = {
-    owner: 'dono',
-    admin: 'admin',
+    owner: 'admin',
     member: 'membro',
 } as const;

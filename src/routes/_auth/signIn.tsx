@@ -1,9 +1,6 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, redirect } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
-import { Alert, AlertTitle } from '@/components/ui/alert';
-import { AlertCircleIcon } from 'lucide-react';
 import { auth } from '@/lib/auth.client';
 import z from 'zod';
 import { useNavigate } from '@tanstack/react-router';
@@ -24,6 +21,11 @@ export const Route = createFileRoute('/_auth/signIn')({
             },
         ],
     }),
+    beforeLoad: ({ context }) => {
+        if (context.user) {
+            throw redirect({ to: '/visao-geral' });
+        }
+    },
 });
 
 function SignIn() {
@@ -54,9 +56,9 @@ function SignIn() {
                 },
                 onSuccess() {
                     console.log('bbbbbbbbbbb');
-                    navigate({ to: '/overview' });
+                    navigate({ to: '/visao-geral' });
                 },
-            }
+            },
         );
     }
 

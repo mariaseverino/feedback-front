@@ -13,7 +13,7 @@ export interface User {
     name: string;
     email: string;
     image: string | null;
-    role: 'Member' | 'Owner' | 'Admin';
+    role: 'member' | 'owner';
     activeOrganizationId: string | null;
     organizationName: string | null;
 }

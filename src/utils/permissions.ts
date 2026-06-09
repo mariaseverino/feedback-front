@@ -1,32 +1,32 @@
-export type Role = 'Member' | 'Owner' | 'Admin';
+export type Role = 'member' | 'owner';
 type Permission =
-    | 'view_navbar'
-    | 'view_dashboard'
-    | 'view_team'
+    | 'view_overview'
     | 'view_feedbacks'
-    | 'view_billing'
+    | 'send_feedbacks'
+    | 'view_team'
+    | 'view_settings'
+    | 'manage_organization'
     | 'view_help'
-    | 'manage_organization';
+    | 'view_billing';
 
 const rolePermissions: Record<Role, Permission[]> = {
-    Owner: [
-        'view_navbar',
-        'view_dashboard',
-        'view_team',
+    owner: [
+        'view_overview',
         'view_feedbacks',
-        'view_billing',
-        'view_help',
-    ],
-    Admin: [
-        'view_navbar',
-        'view_dashboard',
+        'send_feedbacks',
         'view_team',
-        'view_feedbacks',
-        'view_help',
-        'view_billing',
+        'view_settings',
         'manage_organization',
+        'view_help',
+        'view_billing',
     ],
-    Member: ['view_feedbacks'],
+    member: [
+        'view_overview',
+        'view_feedbacks',
+        'send_feedbacks',
+        'view_settings',
+        'view_help',
+    ],
 };
 
 export const permissions = (role: Role): Permission[] => {

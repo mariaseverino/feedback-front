@@ -25,10 +25,9 @@ export type InviteData = z.infer<typeof inviteFormSchema>;
 
 export const Route = createFileRoute('/_internal/membros')({
     component: RouteComponent,
-    beforeLoad: ({ context }) => {
-        const user = context.user as User;
-        if (!Can(user.role, 'view_dashboard')) {
-            // throw redirect({ to: '/feedbacks' });
+    beforeLoad: ({ context: { user } }) => {
+        if (!Can(user.role, 'view_team')) {
+            throw redirect({ to: '/visao-geral' });
         }
     },
 });

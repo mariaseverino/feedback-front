@@ -61,7 +61,7 @@ function SignUp() {
                             organizationId: data.id,
                             organizationSlug: data.slug,
                         });
-                        navigate({ to: '/overview' });
+                        navigate({ to: '/visao-geral' });
                     }
                     // .then(() => {
                     //     // navigate({ to: '/overview' });
