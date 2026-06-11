@@ -15,7 +15,7 @@ export function FeedbackCard({ feedback }: { feedback: Feedback }) {
         >
             <div className="flex items-center justify-between px-5 mb-3">
                 <div className="font-medium text-muted-foreground">
-                    {feedback.anonymous ? 'Anônimo' : feedback.sender}
+                    {feedback.isAnonymous ? 'Anônimo' : feedback.sender}
                 </div>
                 <Badge className={getCategoryColor(feedback.type)}>
                     {getCategoryIcon(feedback.type)}
@@ -53,7 +53,7 @@ export function FeedbackCard({ feedback }: { feedback: Feedback }) {
 //         >
 //             <div className="flex justify-between mb-4">
 //                 <div className="flex gap-2 text-[#6C63FF]">
-//                     {feedback.anonymous ? (
+//                     {feedback.isAnonymous ? (
 //                         <Shield className="size-5" />
 //                     ) : (
 //                         <User className="size-5" />
@@ -62,7 +62,7 @@ export function FeedbackCard({ feedback }: { feedback: Feedback }) {
 //                     <label className="font-bold">
 //                         De:{' '}
 //                         <span className="text-foreground">
-//                             {feedback.anonymous
+//                             {feedback.isAnonymous
 //                                 ? 'Anonimo'
 //                                 : `${feedback.sender}`}
 //                         </span>
@@ -123,7 +123,7 @@ export function FeedbackCard({ feedback }: { feedback: Feedback }) {
 //                     </span>
 
 //                     <span className="font-semibold">
-//                         {feedback.anonymous ? 'Anônimo' : feedback.sender}
+//                         {feedback.isAnonymous ? 'Anônimo' : feedback.sender}
 //                     </span>
 //                 </div>
 

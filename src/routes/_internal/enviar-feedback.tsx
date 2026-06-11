@@ -124,7 +124,7 @@ function RouteComponent() {
                                 {...register('feedback')}
                             />
                         </Field>
-
+                        {/* TODO: enviar feedbacks anonimos nao conta para a contagem no ranking */}
                         <label className="flex items-start gap-3 rounded-lg border p-3 has-aria-checked:border-primary has-aria-checked:bg-primary/20 bg-primary/10 hover:bg-primary/15">
                             <Checkbox
                                 id="sendAnonymously"

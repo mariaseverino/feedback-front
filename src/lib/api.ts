@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { auth } from './auth.client';
+import type { FeedbackType } from '@/hooks/useFeedback';
 
 export const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3333',
@@ -14,17 +15,17 @@ export interface User {
     email: string;
     image: string | null;
     role: 'member' | 'owner';
-    activeOrganizationId: string | null;
-    organizationName: string | null;
+    activeOrganizationId: string;
+    organizationName: string;
 }
 
 export interface Feedback {
     id: string;
-    feedback: string;
-    category: string;
-    receiver: string;
-    isAnonymous: boolean | null;
+    type: FeedbackType;
+    content: string;
+    isAnonymous: boolean;
     createdAt: Date;
+    sender?: string;
 }
 
 export interface SendFeedbackDto {
@@ -101,9 +102,10 @@ export async function sendFeedback(data: SendFeedbackDto) {
 
 export async function getReceivedsFeedbacks() {
     try {
-        const response = await api.get<Feedback[]>('/feedbacks/received', {
+        const response = await api.get<Feedback[]>('/feedbacks', {
             withCredentials: true,
         });
+        console.log(response);
         return response.data;
     } catch (err) {
         const error = err as AxiosError<{ message?: string }>;

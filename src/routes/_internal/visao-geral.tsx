@@ -13,6 +13,8 @@ export const Route = createFileRoute('/_internal/visao-geral')({
 
 function RouteComponent() {
     const { data: feedbacks } = useGetReceivedsFeedback();
+
+    console.log(feedbacks);
     const { data: kpi } = useGetKpi();
 
     const { user } = Route.useRouteContext();
@@ -50,11 +52,16 @@ function RouteComponent() {
                     <div className="col-span-2">
                         <H2>Últimos feedbacks recebidos</H2>
 
-                        <div className="grid grid-cols-2 gap-5">
-                            {feedbacks.slice(0, 4).map((item) => (
-                                <FeedbackCard feedback={item} key={item.id} />
-                            ))}
-                        </div>
+                        {feedbacks && (
+                            <div className="grid grid-cols-2 gap-5">
+                                {feedbacks.slice(0, 4).map((item) => (
+                                    <FeedbackCard
+                                        feedback={item}
+                                        key={item.id}
+                                    />
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </section>
