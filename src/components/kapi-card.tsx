@@ -6,48 +6,66 @@ import {
     Trophy,
 } from 'lucide-react';
 
-export function KpiCard({ cardProps }: { cardProps: Kpi }) {
-    const dif = cardProps.currentValue - cardProps.lastValue;
+export function KpiCard({ currentValue, lastValue, title, type }: Kpi) {
+    const dif =
+        type === 'rank'
+            ? (lastValue ?? currentValue) - currentValue
+            : currentValue - (lastValue ?? 0);
 
-    const improve = dif > 0 || false;
+    // console.log(currentValue, lastValue);
+    // console.log(dif);
+
+    const improve = dif > 0;
 
     return (
         <div className="bg-white rounded-3xl shadow-sm p-6">
             <div className="flex items-start justify-between">
                 <div>
-                    <p className="text-sm text-muted-foreground">
-                        {cardProps.title}
-                    </p>
+                    <p className="text-sm text-muted-foreground">{title}</p>
 
                     <h3 className="mt-3 text-4xl font-bold tracking-tight flex">
-                        {cardProps.type === 'rank' ? (
+                        {type === 'rank' ? (
                             <div className="text-2xl flex items-end mr-1">
                                 #
                             </div>
                         ) : null}
-                        {cardProps.currentValue}
+                        {currentValue}
                     </h3>
                 </div>
 
                 <div className="rounded-xl bg-primary/10 p-3">
-                    {getKpiIcon(cardProps.type)}
+                    {getKpiIcon(type)}
                 </div>
             </div>
 
             <div
                 className={`mt-4 flex items-center gap-1 text-sm ${
-                    improve ? 'text-green-600' : 'text-red-600'
+                    lastValue === undefined || dif === 0
+                        ? 'text-gray-600'
+                        : improve
+                          ? 'text-green-600'
+                          : 'text-red-600'
                 }`}
             >
-                {getUpOrDownIcon(improve)}
-                {cardProps.type === 'rank' ? (
+                {lastValue === undefined || dif === 0
+                    ? ''
+                    : getUpOrDownIcon(improve)}
+                {type === 'rank' ? (
                     <>
-                        {improve
-                            ? `Subiu ${dif} posições`
-                            : `Caiu ${dif} posições`}
+                        {lastValue === undefined
+                            ? 'Sem dados do mês passado'
+                            : dif === 0
+                              ? 'Manteve a posição'
+                              : improve
+                                ? `Subiu ${Math.abs(dif)} posições`
+                                : `Caiu ${Math.abs(dif)} posições`}
                     </>
                 ) : (
-                    <>em relação ao mês anterior</>
+                    <>
+                        {lastValue === undefined || dif === 0
+                            ? 'Sem dados do mês passado'
+                            : 'em relação ao mês anterior'}
+                    </>
                 )}
             </div>
         </div>

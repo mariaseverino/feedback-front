@@ -11,7 +11,15 @@ export const Route = createFileRoute('/_internal/feedbacks')({
     component: RouteComponent,
 });
 
-type FilterType = 'ALL' | 'ELOGIO' | 'SUGESTAO' | 'CRITICA';
+export const FeedbackCategory = {
+    GOING_WELL: 'O que está indo bem',
+    CAN_IMPROVE: 'O que pode melhorar',
+} as const;
+
+export type FeedbackType =
+    (typeof FeedbackCategory)[keyof typeof FeedbackCategory];
+
+export type FilterType = 'ALL' | FeedbackType;
 
 function RouteComponent() {
     const { data: feedbacks = [] } = useGetReceivedsFeedback();
@@ -83,7 +91,7 @@ function RouteComponent() {
                 />
 
                 <div className="flex gap-2 flex-wrap">
-                    {['ALL', 'ELOGIO', 'SUGESTAO', 'CRITICA'].map((type) => (
+                    {['ALL', ...Object.values(FeedbackCategory)].map((type) => (
                         <Button
                             key={type}
                             variant={filter === type ? 'default' : 'outline'}

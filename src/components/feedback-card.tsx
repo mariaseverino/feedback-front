@@ -2,6 +2,7 @@ import type { Feedback } from '@/hooks/useFeedback';
 import {
     getCategoryBorder,
     getCategoryColor,
+    getCategoryConfig,
     getCategoryIcon,
 } from '@/lib/feedback-utils';
 import { Badge } from './ui/badge';
@@ -9,16 +10,18 @@ import { formatDistance } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 export function FeedbackCard({ feedback }: { feedback: Feedback }) {
+    const { badge, border, icon } = getCategoryConfig(feedback.type);
+
     return (
         <div
-            className={`bg-white rounded-3xl flex flex-col border py-5 shadow-sm ${getCategoryBorder(feedback.type)}`}
+            className={`bg-white rounded-3xl flex flex-col border py-5 shadow-sm ${border}`}
         >
             <div className="flex items-center justify-between px-5 mb-3">
                 <div className="font-medium text-muted-foreground">
                     {feedback.isAnonymous ? 'Anônimo' : feedback.sender}
                 </div>
-                <Badge className={getCategoryColor(feedback.type)}>
-                    {getCategoryIcon(feedback.type)}
+                <Badge className={badge}>
+                    {icon}
                     <span className="ml-1">{feedback.type}</span>
                 </Badge>
             </div>

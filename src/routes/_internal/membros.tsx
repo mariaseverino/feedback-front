@@ -10,7 +10,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { auth } from '@/lib/auth.client';
 import { InviteTable } from '@/components/invites-table';
-import type { User } from '@/lib/api';
 import { Can } from '@/utils/permissions';
 import { H1 } from '@/components/h1';
 import { FileSpreadsheet, Upload, X } from 'lucide-react';
@@ -39,6 +38,20 @@ type InviteVariables = {
 
 function RouteComponent() {
     const [tab, setTab] = useState<'members' | 'invites'>('members');
+    const [inviteEmail, setInviteEmail] = useState<string>();
+
+    const { user } = Route.useRouteContext();
+
+    const { mutate: sendInvitation, error } = useSendInvitation({
+        email: inviteEmail!,
+        organizationId: user.activeOrganizationId,
+    });
+
+    function handleSubmit() {
+        if (inviteEmail) {
+            sendInvitation();
+        }
+    }
 
     return (
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-6 py-8">
@@ -57,9 +70,15 @@ function RouteComponent() {
                                 placeholder="email@empresa.com"
                                 className="w-[320px] bg-white/5 border border-primary/40"
                                 id="email"
+                                onChange={(e) => setInviteEmail(e.target.value)}
                             />
 
-                            <Button>Convidar</Button>
+                            <Button
+                                onClick={handleSubmit}
+                                disabled={inviteEmail ? false : true}
+                            >
+                                Convidar
+                            </Button>
                         </div>
                     </Field>
 
@@ -359,6 +378,7 @@ export function InviteMemberDialog() {
 import { Users, UserCheck, Mail, Shield } from 'lucide-react';
 import { Field } from '@/components/field';
 import { H3 } from '@/components/h3';
+import { useSendInvitation } from '@/hooks/organization';
 
 function StatCard({
     title,

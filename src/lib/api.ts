@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { auth } from './auth.client';
-import type { FeedbackType } from '@/hooks/useFeedback';
+import type { FeedbackType, Kpi } from '@/hooks/useFeedback';
 
 export const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3333',
@@ -105,7 +105,59 @@ export async function getReceivedsFeedbacks() {
         const response = await api.get<Feedback[]>('/feedbacks', {
             withCredentials: true,
         });
-        console.log(response);
+        return response.data;
+    } catch (err) {
+        const error = err as AxiosError<{ message?: string }>;
+        throw error;
+    }
+}
+
+export interface OrganizationRaking {
+    userId: string | null;
+    name: string;
+    total: number;
+}
+
+interface MyPosition {
+    currentMonthPosition: {
+        rank: number;
+        total: number;
+    };
+    lastMonthPosition: {
+        rank: number | undefined;
+        total: number;
+    };
+}
+
+export async function getRanking() {
+    try {
+        const response = await api.get<OrganizationRaking[]>('/ranking', {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (err) {
+        const error = err as AxiosError<{ message?: string }>;
+        throw error;
+    }
+}
+
+export async function getMyPosition(): Promise<MyPosition> {
+    try {
+        const response = await api.get('/ranking/my-position', {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (err) {
+        const error = err as AxiosError<{ message?: string }>;
+        throw error;
+    }
+}
+
+export async function getFeedbackKpi(): Promise<Kpi[]> {
+    try {
+        const response = await api.get('/feedbacks/kpi', {
+            withCredentials: true,
+        });
         return response.data;
     } catch (err) {
         const error = err as AxiosError<{ message?: string }>;

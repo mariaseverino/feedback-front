@@ -1,4 +1,5 @@
 import {
+    getFeedbackKpi,
     getReceivedsFeedbacks,
     sendFeedback,
     type Member,
@@ -7,7 +8,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Trophy } from 'lucide-react';
 
-export type FeedbackType = 'Positivo' | 'Construtivo' | 'Geral';
+export type FeedbackType = 'O que está indo bem' | 'O que pode melhorar';
 
 export interface Feedback {
     id: string;
@@ -252,7 +253,7 @@ export function useGetMembersRanking() {
 export type Kpi = {
     title: string;
     currentValue: number;
-    lastValue: number;
+    lastValue: number | undefined;
     type: 'trend' | 'rank';
 };
 
@@ -270,13 +271,22 @@ export function useGetKpi() {
             lastValue: 15,
             type: 'trend',
         },
-        {
-            title: 'Seu Ranking',
-            currentValue: 5,
-            lastValue: 3,
-            type: 'rank',
-        },
+        // {
+        //     title: 'Seu Ranking',
+        //     currentValue: 5,
+        //     lastValue: 3,
+        //     type: 'rank',
+        // },
     ];
 
-    return { data: cards };
+    return useQuery({
+        queryKey: ['kpi'],
+        queryFn: getFeedbackKpi,
+        staleTime: 1000 * 60 * 5,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        retry: false,
+    });
+
+    // return { data: cards };
 }
