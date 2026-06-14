@@ -148,7 +148,13 @@ function RouteComponent() {
                 </div>
 
                 <div className="px-6 py-2">
-                    {tab === 'members' ? <MembersTable /> : <InviteTable />}
+                    {tab === 'members' ? (
+                        <MembersTable
+                            organizationId={user.activeOrganizationId}
+                        />
+                    ) : (
+                        <InviteTable />
+                    )}
                 </div>
             </section>
         </div>

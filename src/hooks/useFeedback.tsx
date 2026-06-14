@@ -159,9 +159,6 @@ export function useGetReceivedsFeedback() {
 export function useSendFeedback() {
     return useMutation({
         mutationFn: async (data: SendFeedbackDto) => sendFeedback(data),
-        onSuccess: () => {
-            console.log({ mensage: 'feedback enviado' });
-        },
     });
 }
 

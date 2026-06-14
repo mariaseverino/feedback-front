@@ -5,7 +5,7 @@ import { Controller, useForm } from 'react-hook-form';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSendFeedback } from '@/hooks/useFeedback';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { H1 } from '@/components/h1';
 import {
@@ -23,6 +23,8 @@ import {
     CommandList,
 } from '@/components/ui/command';
 import { Field } from '@/components/field';
+import { CATEGORY_CONFIG } from '@/lib/feedback-utils';
+import { useGetMembers } from '@/hooks/organization';
 
 export const Route = createFileRoute('/_internal/enviar-feedback')({
     component: RouteComponent,
@@ -30,49 +32,59 @@ export const Route = createFileRoute('/_internal/enviar-feedback')({
 
 export const sendFeedbackFormSchema = z.object({
     memberId: z.string(),
-    category: z.enum(['positivo', 'construtivo', 'geral']),
-    feedback: z.string().min(1, 'Senha obrigatória'),
+    category: z.string(),
+    feedback: z.string().min(1, ''),
     sendAnonymously: z.boolean(),
 });
 
 export type SendFeedbackFormSchema = z.infer<typeof sendFeedbackFormSchema>;
+
+type Member = {
+    id: string;
+    name: string;
+    email: string;
+};
 
 function RouteComponent() {
     const {
         register,
         handleSubmit,
         control,
+        reset,
         formState: { errors },
     } = useForm<SendFeedbackFormSchema>({
         resolver: zodResolver(sendFeedbackFormSchema),
     });
 
-    const members = [
-        {
-            id: 'member',
-            name: 'Membro',
-            email: 'membro@email.com',
-        },
-        {
-            id: 'admin',
-            name: 'Admin',
-            email: 'admin@email.com',
-        },
-    ];
+    const { user } = Route.useRouteContext();
+
+    const { data = [] } = useGetMembers(user.activeOrganizationId);
 
     const [open, setOpen] = useState(false);
 
-    const { mutateAsync: sendFeedbackFn } = useSendFeedback();
+    const membersWithoutMe = data
+        .filter((item) => item.userId !== user.id)
+        .map((item) => ({
+            id: item.userId,
+            name: item.name,
+            email: item.email,
+        }));
+
+    const { mutateAsync: sendFeedbackFn, isSuccess } = useSendFeedback();
 
     async function handleSendFeedbackForm(credentials: SendFeedbackFormSchema) {
-        // await sendFeedbackFn({
-        //     email: credentials.email,
-        //     role: credentials.role,
-        // });
-        // setValue('email', '');
-        // setTab('pending_members');
+        await sendFeedbackFn({
+            category: credentials.category,
+            feedback: credentials.feedback,
+            receiverId: credentials.memberId,
+            isAnonymous: credentials.sendAnonymously,
+        });
 
-        console.log(credentials);
+        reset();
+    }
+
+    if (isSuccess) {
+        alert('sucesso');
     }
 
     return (
@@ -109,7 +121,7 @@ function RouteComponent() {
                                     render={({ field }) => (
                                         <MembersAvaliable
                                             field={field}
-                                            members={members}
+                                            members={membersWithoutMe}
                                             open={open}
                                             setOpen={setOpen}
                                         />
@@ -125,22 +137,30 @@ function RouteComponent() {
                             />
                         </Field>
                         {/* TODO: enviar feedbacks anonimos nao conta para a contagem no ranking */}
-                        <label className="flex items-start gap-3 rounded-lg border p-3 has-aria-checked:border-primary has-aria-checked:bg-primary/20 bg-primary/10 hover:bg-primary/15">
-                            <Checkbox
-                                id="sendAnonymously"
-                                className="data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-white border-primary "
-                                {...register('sendAnonymously')}
-                            />
-                            <div className="grid gap-1.5 font-normal">
-                                <p className="text-sm leading-none font-medium">
-                                    Enviar anonimamente
-                                </p>
-                                <p className="text-muted-foreground text-sm">
-                                    Se marcada, o destinatário não saberá quem
-                                    enviou.
-                                </p>
-                            </div>
-                        </label>
+                        <Controller
+                            control={control}
+                            name="sendAnonymously"
+                            defaultValue={false}
+                            render={({ field }) => (
+                                <label className="flex items-start gap-3 rounded-lg border p-3 has-aria-checked:border-primary has-aria-checked:bg-primary/20 bg-primary/10 hover:bg-primary/15">
+                                    <Checkbox
+                                        id="sendAnonymously"
+                                        className="data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-white border-primary "
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                    />
+                                    <div className="grid gap-1.5 font-normal">
+                                        <p className="text-sm leading-none font-medium">
+                                            Enviar anonimamente
+                                        </p>
+                                        <p className="text-muted-foreground text-sm">
+                                            Se marcada, o destinatário não
+                                            saberá quem enviou.
+                                        </p>
+                                    </div>
+                                </label>
+                            )}
+                        />
                     </div>
                     <div>
                         <Button type="submit" className="w-full bg-primary">
@@ -184,7 +204,7 @@ function MembersAvaliable({
                     <ChevronsUpDown className="size-3.5 text-muted-foreground" />
                 </button>
             </PopoverTrigger>
-            <PopoverContent className="w-114 p-0">
+            <PopoverContent className="w-94 p-0">
                 <Command>
                     <CommandInput placeholder="Nome ou email..." />
                     <CommandList>
@@ -219,43 +239,25 @@ function MembersAvaliable({
 }
 
 function CategorySelector({ field }: { field: any }) {
-    const categories = [
-        {
-            id: 'positivo',
-            name: 'Positivo',
-            icon: '👏',
-            color: 'text-green-600',
-            activeBg: 'bg-green-600/10 border-green-600',
-        },
-        {
-            id: 'construtivo',
-            name: 'Construtivo',
-            icon: '💡',
-            color: 'text-yellow-600',
-            activeBg: 'bg-yellow-600/10 border-yellow-600',
-        },
-        {
-            id: 'geral',
-            name: 'Geral',
-            icon: '💬',
-            color: 'text-blue-600',
-            activeBg: 'bg-blue-600/10 border-blue-600',
-        },
-    ];
+    const categories = Object.entries(CATEGORY_CONFIG).map(([id, config]) => ({
+        id,
+        name: id,
+        ...config,
+    }));
 
     return (
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
             {categories.map((cat) => (
                 <button
                     key={cat.id}
                     type="button"
-                    onClick={() => field.onChange(cat.id)}
+                    onClick={() => field.onChange(cat.name)}
                     className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-all
             ${
                 field.value === cat.id
-                    ? `${cat.activeBg}`
+                    ? `${cat.badge}`
                     : 'border-border hover:bg-primary/5'
-            } ${cat.color}`}
+            } ${cat.border}`}
                 >
                     <span className="text-xl">{cat.icon}</span>
                     <span className="text-xs font-medium">{cat.name}</span>

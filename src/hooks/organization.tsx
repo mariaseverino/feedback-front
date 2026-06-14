@@ -49,3 +49,27 @@ export function useGetMyPositionInRanking() {
         retry: false,
     });
 }
+
+export function useGetMembers(organizationId: string) {
+    return useQuery({
+        queryKey: ['members', organizationId],
+        queryFn: () =>
+            auth.organization.listMembers({
+                query: {
+                    organizationId: organizationId,
+                    limit: 100,
+                    offset: 0,
+                    sortBy: 'createdAt',
+                    sortDirection: 'desc',
+                },
+            }),
+        select: (res) =>
+            res.data?.members.map((member) => ({
+                userId: member.user.id,
+                name: member.user.name,
+                email: member.user.email,
+                role: member.role,
+                createdAt: member.createdAt,
+            })) ?? [],
+    });
+}

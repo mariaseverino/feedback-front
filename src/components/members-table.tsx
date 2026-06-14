@@ -34,6 +34,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { auth } from '@/lib/auth.client';
 import { roleMap } from '@/utils/roleMap';
+import { useGetMembers } from '@/hooks/organization';
 
 // const data: Payment[] = [
 //     {
@@ -104,7 +105,7 @@ export const columns: ColumnDef<Member>[] = [
         accessorKey: 'name',
         header: 'Nome',
         cell: ({ row }) => (
-            <div className="capitalize">{row.original.user!.name}</div>
+            <div className="capitalize">{row.original.name}</div>
         ),
     },
     {
@@ -123,7 +124,7 @@ export const columns: ColumnDef<Member>[] = [
             );
         },
         cell: ({ row }) => (
-            <div className="lowercase">{row.original.user!.email}</div>
+            <div className="lowercase">{row.original.email}</div>
         ),
     },
     {
@@ -264,18 +265,26 @@ export const columns2: ColumnDef<Invite>[] = [
     // },
 ];
 
+// interface Member {
+//     id: string;
+//     organizationId: string;
+//     role: 'member' | 'admin' | 'owner';
+//     createdAt: Date;
+//     userId: string;
+//     user: {
+//         id: string;
+//         email: string;
+//         name: string;
+//         image?: string;
+//     };
+// }
+
 interface Member {
-    id: string;
-    organizationId: string;
+    userId: string;
+    name: string;
+    email: string;
     role: 'member' | 'admin' | 'owner';
     createdAt: Date;
-    userId: string;
-    user: {
-        id: string;
-        email: string;
-        name: string;
-        image?: string;
-    };
 }
 
 interface Invite {
@@ -286,7 +295,7 @@ interface Invite {
     createdAt: Date;
 }
 
-export function MembersTable() {
+export function MembersTable({ organizationId }: { organizationId: string }) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
@@ -294,23 +303,7 @@ export function MembersTable() {
     );
     const [rowSelection, setRowSelection] = useState({});
 
-    const { data: organizations } = auth.useListOrganizations();
-
-    const { data = [] } = useQuery({
-        queryKey: ['members'],
-        queryFn: () =>
-            auth.organization
-                .listMembers({
-                    query: {
-                        organizationId: organizations![0].id,
-                        limit: 100,
-                        offset: 0,
-                        sortBy: 'createdAt',
-                        sortDirection: 'desc',
-                    },
-                })
-                .then((res) => res.data?.members),
-    });
+    const { data = [] } = useGetMembers(organizationId);
 
     const table = useReactTable({
         data,

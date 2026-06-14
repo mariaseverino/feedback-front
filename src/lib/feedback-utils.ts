@@ -37,7 +37,7 @@ export const getCategoryBorder = (category: FeedbackType) => {
     }
 };
 
-const CATEGORY_CONFIG = {
+export const CATEGORY_CONFIG = {
     [FeedbackCategory.GOING_WELL]: {
         badge: 'bg-[#E2F9E7] text-[#1D711C] border-[#1D711C]',
         border: 'border-[#1D711C]',

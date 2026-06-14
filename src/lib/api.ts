@@ -32,7 +32,7 @@ export interface SendFeedbackDto {
     category: string;
     feedback: string;
     receiverId: string;
-    anonymous: boolean;
+    isAnonymous: boolean;
 }
 
 export interface Member {
@@ -91,7 +91,8 @@ export async function getMe(): Promise<User> {
 
 export async function sendFeedback(data: SendFeedbackDto) {
     try {
-        await api.post<SendFeedbackDto>('/feedback', data, {
+        console.log('ENVIANDO', data);
+        await api.post<SendFeedbackDto>('/feedbacks/send', data, {
             withCredentials: true,
         });
     } catch (err) {
@@ -116,6 +117,7 @@ export interface OrganizationRaking {
     userId: string | null;
     name: string;
     total: number;
+    rank: number;
 }
 
 interface MyPosition {
