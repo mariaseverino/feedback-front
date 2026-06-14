@@ -39,26 +39,17 @@ export function Ranking({
             </div> */}
 
             <div className="mb-6 flex items-end justify-center gap-3 pt-3">
-                {podium[1] && (
-                    <PodiumCard user={podium[1]} height="h-18" ranking={2} />
-                )}
+                {podium[1] && <PodiumCard user={podium[1]} height="h-18" />}
 
                 {podium[0] && (
-                    <PodiumCard
-                        user={podium[0]}
-                        height="h-24"
-                        winner
-                        ranking={1}
-                    />
+                    <PodiumCard user={podium[0]} height="h-24" winner />
                 )}
 
-                {podium[2] && (
-                    <PodiumCard user={podium[2]} height="h-14" ranking={3} />
-                )}
+                {podium[2] && <PodiumCard user={podium[2]} height="h-14" />}
             </div>
 
             <div className="space-y-2 border-t pt-4">
-                {data.slice(3).map((member, index) => (
+                {data.slice(3).map((member) => (
                     <div
                         key={member.userId}
                         className={cn(
@@ -69,7 +60,7 @@ export function Ranking({
                     >
                         <div className="flex items-center gap-3">
                             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-background font-semibold">
-                                {index + 1}
+                                {member.rank}
                             </div>
 
                             <Avatar className="size-8">
@@ -104,10 +95,9 @@ interface PodiumCardProps {
     user: OrganizationRaking;
     height: string;
     winner?: boolean;
-    ranking: number;
 }
 
-function PodiumCard({ user, height, winner, ranking }: PodiumCardProps) {
+function PodiumCard({ user, height, winner }: PodiumCardProps) {
     return (
         <div className="flex flex-col items-center">
             {winner && <Crown className="mb-2 text-yellow-500" />}
@@ -127,7 +117,7 @@ function PodiumCard({ user, height, winner, ranking }: PodiumCardProps) {
                     height,
                 )}
             >
-                #{ranking}
+                #{user.rank}
             </div>
             <span className="truncate text-xs font-medium mt-1.5">
                 {user.total} feedbacks
