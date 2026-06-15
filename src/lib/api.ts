@@ -166,3 +166,49 @@ export async function getFeedbackKpi(): Promise<Kpi[]> {
         throw error;
     }
 }
+
+export async function inviteMembers(
+    organizationId: string,
+    formData: FormData,
+) {
+    try {
+        const response = await api.post(
+            `organizations/${organizationId}/invite-csv`,
+            formData,
+            {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                withCredentials: true,
+            },
+        );
+        return response.data;
+    } catch (err) {
+        const error = err as AxiosError<{ message?: string }>;
+        throw error;
+    }
+}
+
+interface Invitation {
+    id: string;
+    organizationId: string;
+    email: string;
+    role: 'member' | 'admin' | 'owner';
+    inviterId: string;
+    expiresAt: Date;
+}
+
+export async function getInvitation(
+    invitationId: string,
+): Promise<Invitation | null> {
+    try {
+        const response = await api.post(`invitations/${invitationId}`, {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (err) {
+        const error = err as AxiosError<{ message?: string }>;
+        if (error.response?.status === 404) {
+            return null;
+        }
+        throw error;
+    }
+}

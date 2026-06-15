@@ -1,12 +1,29 @@
+import { useGetInvitation } from '@/hooks/organization';
+import { getInvitation } from '@/lib/api';
 import { auth } from '@/lib/auth.client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import {
+    createFileRoute,
+    Link,
+    redirect,
+    useNavigate,
+} from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
-import z from 'zod';
+import z, { email } from 'zod';
 
 export const Route = createFileRoute('/_auth/signUp/$invitationId')({
     component: SignUpWithInvitation,
+    beforeLoad: async ({ params }) => {
+        const invitation = await getInvitation(params.invitationId);
+
+        if (!invitation) {
+            throw redirect({ to: '/signIn' });
+        }
+
+        return { invitation };
+    },
 });
+
 export const registerFormSchema = z
     .object({
         name: z.string().min(1, 'Nome obrigatório'),
@@ -22,15 +39,18 @@ export const registerFormSchema = z
 export type RegisterData = z.infer<typeof registerFormSchema>;
 
 function SignUpWithInvitation() {
-    const { invitationId } = Route.useParams();
+    const { invitation } = Route.useRouteContext();
 
     const {
         register,
         handleSubmit,
         formState: { errors },
+        setValue,
     } = useForm<RegisterData>({
         resolver: zodResolver(registerFormSchema),
     });
+
+    setValue('email', invitation.email);
 
     const navigate = useNavigate();
 
@@ -49,7 +69,7 @@ function SignUpWithInvitation() {
                 async onSuccess() {
                     const { data, error } =
                         await auth.organization.acceptInvitation({
-                            invitationId: invitationId,
+                            invitationId: invitation.id,
                         });
 
                     if (error) {
@@ -115,17 +135,19 @@ function SignUpWithInvitation() {
                                 </label>
                                 <div className="mt-2">
                                     <input
-                                        {...register('email')}
+                                        // {...register('email')}
+                                        // value={data?.email}
+                                        disabled
                                         id="email"
                                         type="email"
                                         autoComplete="email"
                                         className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-gray-500 outline-1 -outline-offset-1 outline-gray-400 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-violet-500 sm:text-sm/6"
                                     />
-                                    {errors.email && (
+                                    {/* {errors.email && (
                                         <p className="text-destructive text-sm">
                                             {errors.email.message}
                                         </p>
-                                    )}
+                                    )} */}
                                 </div>
                             </div>
 

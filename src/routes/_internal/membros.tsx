@@ -31,25 +31,20 @@ export const Route = createFileRoute('/_internal/membros')({
     },
 });
 
-type InviteVariables = {
-    email: string;
-    role: 'member' | 'admin';
-};
-
 function RouteComponent() {
     const [tab, setTab] = useState<'members' | 'invites'>('members');
     const [inviteEmail, setInviteEmail] = useState<string>();
 
     const { user } = Route.useRouteContext();
 
-    const { mutate: sendInvitation, error } = useSendInvitation({
-        email: inviteEmail!,
-        organizationId: user.activeOrganizationId,
-    });
+    const { mutate: sendInvitation } = useSendInvitation();
 
     function handleSubmit() {
         if (inviteEmail) {
-            sendInvitation();
+            sendInvitation({
+                email: inviteEmail!,
+                organizationId: user.activeOrganizationId,
+            });
         }
     }
 
@@ -85,7 +80,9 @@ function RouteComponent() {
                     <div className="hidden lg:block h-8 w-px bg-border" />
 
                     <Field label="Importar lista">
-                        <ImportCsvButton />
+                        <ImportCsvButton
+                            organizationId={user.activeOrganizationId}
+                        />
                     </Field>
                 </div>
 
@@ -183,10 +180,16 @@ function TabButton({
     );
 }
 
-export function ImportCsvButton() {
+export function ImportCsvButton({
+    organizationId,
+}: {
+    organizationId: string;
+}) {
     const [file, setFile] = useState<File | null>(null);
 
     const inputRef = useRef<HTMLInputElement>(null);
+
+    const { mutateAsync: sendInvitation } = useSendInvitationWithCsv();
 
     function handleSelectFile(file: File | null) {
         if (!file) return;
@@ -197,10 +200,10 @@ export function ImportCsvButton() {
     async function handleUpload() {
         if (!file) return;
 
-        // TODO:
-        // upload csv
-        // parse
-        // invalidate queries
+        const formData = new FormData();
+        formData.append('file', file);
+
+        sendInvitation({ organizationId, formData });
     }
 
     return (
@@ -384,7 +387,10 @@ export function InviteMemberDialog() {
 import { Users, UserCheck, Mail, Shield } from 'lucide-react';
 import { Field } from '@/components/field';
 import { H3 } from '@/components/h3';
-import { useSendInvitation } from '@/hooks/organization';
+import {
+    useSendInvitation,
+    useSendInvitationWithCsv,
+} from '@/hooks/organization';
 
 function StatCard({
     title,

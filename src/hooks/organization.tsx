@@ -1,4 +1,9 @@
-import { getMyPosition, getRanking } from '@/lib/api';
+import {
+    getInvitation,
+    getMyPosition,
+    getRanking,
+    inviteMembers,
+} from '@/lib/api';
 import { auth } from '@/lib/auth.client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -7,11 +12,11 @@ type InviteData = {
     organizationId: string;
 };
 
-export function useSendInvitation(data: InviteData) {
+export function useSendInvitation() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationKey: ['invites'],
-        mutationFn: async () => {
+        mutationFn: async (data: InviteData) => {
             return auth.organization.inviteMember({
                 email: data.email,
                 role: 'member',
@@ -20,7 +25,30 @@ export function useSendInvitation(data: InviteData) {
             });
         },
 
-        onSuccess(_, variables) {
+        onSuccess() {
+            queryClient.invalidateQueries({
+                queryKey: ['invites'],
+            });
+        },
+    });
+}
+
+export function useSendInvitationWithCsv() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationKey: ['invites'],
+        mutationFn: async ({
+            organizationId,
+            formData,
+        }: {
+            organizationId: string;
+            formData: FormData;
+        }) => inviteMembers(organizationId, formData),
+
+        onSuccess(data, variables, onMutateResult, context) {
+            console.log(data);
+            console.log(variables);
+            console.log(context);
             queryClient.invalidateQueries({
                 queryKey: ['invites'],
             });
@@ -71,5 +99,12 @@ export function useGetMembers(organizationId: string) {
                 role: member.role,
                 createdAt: member.createdAt,
             })) ?? [],
+    });
+}
+
+export function useGetInvitation(invitationId: string) {
+    return useQuery({
+        queryKey: ['invitation', invitationId],
+        queryFn: async () => getInvitation(invitationId),
     });
 }
